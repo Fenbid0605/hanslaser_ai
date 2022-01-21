@@ -3,9 +3,12 @@ import torch
 import matplotlib.pyplot as plt
 from net import Net
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f'device: {device}')
+
 if __name__ == '__main__':
     model = Net()
-    model.load_state_dict(torch.load('model.pl'))
+    model.load_state_dict(torch.load('model.pl', map_location=device))
 
     model.eval()
 

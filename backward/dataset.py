@@ -16,5 +16,5 @@ class DataSet:
         self.x_matrix = torch.Tensor(x_matrix)
         self.y_matrix = torch.Tensor(y_matrix)
 
-        print(self.x_matrix)
-        print(self.y_matrix)
+        # print(self.x_matrix)
+        # print(self.y_matrix)

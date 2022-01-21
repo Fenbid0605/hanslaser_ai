@@ -1,3 +1,4 @@
+import numpy
 import torch
 from matplotlib import pyplot as plt
 
@@ -32,7 +33,7 @@ def test(_back_model, _front_model, dataSet):
     front_net = _front_model.to(device)
     for i, row in enumerate(list(worksheet.rows)[1:]):
         to_predict = prediction_x[i].cpu().detach().numpy()
-        to_predict = torch.tensor([to_predict]).to(device)
+        to_predict = torch.tensor(numpy.array([to_predict])).to(device)
         predict = front_net(to_predict)[0]
 
         l_predict_list.append(predict[0].item())
@@ -67,11 +68,11 @@ def test(_back_model, _front_model, dataSet):
 
 if __name__ == "__main__":
     back_model = back_net()
-    back_model.load_state_dict(torch.load('../backward/model.pl'))
+    back_model.load_state_dict(torch.load('../backward/model.pl', map_location=device))
     back_model.eval()
 
     front_model = front_net()
-    front_model.load_state_dict(torch.load('../forward/model.pl'))
+    front_model.load_state_dict(torch.load('../forward/model.pl', map_location=device))
     front_model.eval()
 
     dataSet = DataSet()
