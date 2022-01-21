@@ -34,6 +34,7 @@ class Net(torch.nn.Module):
     def _set_init(layer):
         torch.nn.init.normal_(layer.weight, mean=0, std=.1)
         torch.nn.init.constant_(layer.bias, B_INIT)
+        torch.nn.Dropout(0.5)
 
     def forward(self, x):
         # 一次正向行走过程

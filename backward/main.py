@@ -20,9 +20,9 @@ def train(_model, dataSet):
     net = _model.to(device)
 
     loss_func = F.mse_loss
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.000006)
+    optimizer = torch.optim.SGD(net.parameters(), lr=0.000004)
 
-    for _ in track(range(160000)):
+    for _ in track(range(250000)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
@@ -34,6 +34,7 @@ def train(_model, dataSet):
 
 if __name__ == '__main__':
     model = Net()
+    model.load_state_dict(torch.load('model.pl', map_location=device))
 
     dataSet = DataSet()
 

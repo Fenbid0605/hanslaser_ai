@@ -3,7 +3,7 @@ import torch
 # Hyper parameters
 N_INPUT = 3
 N_HIDDEN_LAYER = 8
-N_HIDDEN = 28
+N_HIDDEN = 24
 N_OUTPUT = 4
 ACTIVATION = torch.relu
 B_INIT = -0.2  # use a bad bias constant initializer
