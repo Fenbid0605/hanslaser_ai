@@ -4,17 +4,7 @@ from matplotlib import pyplot as plt
 
 from net import Net
 
-if __name__ == '__main__':
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f'device: {device}')
-    model = Net()
-    model.load_state_dict(torch.load('model.pl', map_location=device))
-
-    model.eval()
-
-    workbook = openpyxl.load_workbook('../data/data.xlsx')
-    worksheet = workbook.worksheets[0]
-
+def test(worksheet, name):
     i_predict_list = []  # 电流
     speed_predict_list = []  # 打标速度
     Qpin_predict_list = []  # Q频
@@ -71,4 +61,18 @@ if __name__ == '__main__':
     axs[3].legend()
 
     fig.suptitle('A_speed_Qpin_QshiFang')
+    plt.savefig('%s.png' % name)
     plt.show()
+
+if __name__ == '__main__':
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f'device: {device}')
+    model = Net()
+    model.load_state_dict(torch.load('model.pl', map_location=device))
+
+    model.eval()
+
+    workbook = openpyxl.load_workbook('../data/data.xlsx')
+    test( workbook.worksheets[0], 'Train')
+    test( workbook.worksheets[1], 'Vaild')
+    

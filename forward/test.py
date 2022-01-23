@@ -7,7 +7,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
 
-def test(worksheet):
+def test(worksheet, name):
     l_predict_list = []
     a_predict_list = []
     b_predict_list = []
@@ -53,6 +53,7 @@ def test(worksheet):
     axs[2].legend()
 
     fig.suptitle('LAB')
+    plt.savefig('./%s-lab.png' % name)
     plt.show()
 
 
@@ -63,5 +64,5 @@ if __name__ == '__main__':
     model.eval()
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
-    for ws in workbook.worksheets:
-        test(ws)
+    test(workbook.worksheets[0], 'Train')
+    test(workbook.worksheets[1], 'Vaild')

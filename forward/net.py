@@ -3,7 +3,7 @@ import torch
 # Hyper parameters
 N_INPUT = 4
 N_HIDDEN_LAYER = 20
-N_HIDDEN = 130
+N_HIDDEN = 100
 N_OUTPUT = 3
 ACTIVATION = torch.tanh
 B_INIT = -0.2  # use a bad bias constant initializer
@@ -26,6 +26,9 @@ class Net(torch.nn.Module):
             bn = torch.nn.BatchNorm1d(N_HIDDEN, momentum=0.5)
             setattr(self, 'bn%i' % i, bn)
             self.bns.append(bn)
+
+            dropout = torch.nn.Dropout(0.5)
+            setattr(self, 'dropout%i' % i, dropout)
 
         self.predict = torch.nn.Linear(N_HIDDEN, N_OUTPUT)
         self._set_init(self.predict)

@@ -25,7 +25,7 @@ def train(_model, dataSet):
     optimizer = torch.optim.SGD(net.parameters(), lr=0.000004)
     x_list = []
     loss_list = []
-    for i in track(range(250000)):
+    for i in track(range(50000)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
@@ -42,14 +42,18 @@ def train(_model, dataSet):
 
     ax.plot(x_list, loss_list, label='loss')
     ax.legend()
-
+    plt.savefig('./loss.png')
     fig.suptitle('Loss')
     plt.show()
 
 
 if __name__ == '__main__':
     model = Net()
-    model.load_state_dict(torch.load('model.pl', map_location=device))
+    print(model)
+    try:
+        model.load_state_dict(torch.load('model.pl', map_location=device))
+    except:
+        pass
 
     dataSet = DataSet()
 
