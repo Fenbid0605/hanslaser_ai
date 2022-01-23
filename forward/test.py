@@ -6,14 +6,8 @@ from net import Net
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
-if __name__ == '__main__':
-    model = Net()
-    model.load_state_dict(torch.load('model.pl', map_location=device))
 
-    model.eval()
-
-    workbook = openpyxl.load_workbook('../data/data.xlsx')
-    worksheet = workbook.worksheets[0]
+def test(worksheet):
     l_predict_list = []
     a_predict_list = []
     b_predict_list = []
@@ -60,3 +54,14 @@ if __name__ == '__main__':
 
     fig.suptitle('LAB')
     plt.show()
+
+
+if __name__ == '__main__':
+    model = Net()
+    model.load_state_dict(torch.load('model.pl', map_location=device))
+
+    model.eval()
+
+    workbook = openpyxl.load_workbook('../data/data.xlsx')
+    for ws in workbook.worksheets:
+        test(ws)

@@ -2,6 +2,8 @@
 import torch
 import torch.utils.data as Data  # ff
 import torch.nn.functional as F
+from matplotlib import pyplot as plt
+
 from dataset import DataSet
 from net import Net
 from rich.progress import track
@@ -22,15 +24,26 @@ def train(_model, dataSet):
     # print(net)
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=0.00001)
-
-    for _ in track(range(10000)):
+    x_list = []
+    loss_list = []
+    for i in track(range(100000)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
-
+        loss_list.append(loss.item())
+        x_list.append(i)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+    # 绘图
+    fig, ax = plt.subplots()
+
+    ax.plot(x_list, loss_list, label='loss')
+    ax.legend()
+
+    fig.suptitle('Loss')
+    plt.show()
 
 
 if __name__ == '__main__':
