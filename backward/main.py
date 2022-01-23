@@ -1,4 +1,6 @@
 # coding-utf8
+import os
+
 import torch
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
@@ -6,6 +8,9 @@ from matplotlib import pyplot as plt
 from dataset import DataSet
 from net import Net
 from rich.progress import track
+
+LR = 0.000004
+EPOCH = 20000
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
@@ -22,17 +27,21 @@ def train(_model, dataSet):
     net = _model.to(device)
 
     loss_func = F.mse_loss
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.000004)
+    optimizer = torch.optim.SGD(net.parameters(), lr=LR)
+    # optimizer = torch.optim.Adam(net.parameters(), lr=LR)
+
     x_list = []
     loss_list = []
-    for i in track(range(20000)):
+    for i in track(range(EPOCH)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
         loss_list.append(loss.item())
 
         optimizer.zero_grad()
+
         loss.backward()
+
         optimizer.step()
 
         x_list.append(i)
@@ -52,6 +61,7 @@ if __name__ == '__main__':
     print(model)
     try:
         model.load_state_dict(torch.load('model.pl', map_location=device))
+        model.train()
     except:
         pass
 

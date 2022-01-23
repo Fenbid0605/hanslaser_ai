@@ -15,6 +15,7 @@ class Net(torch.nn.Module):
         super(Net, self).__init__()
         self.fcs = []
         self.bns = []
+        self.drops = []
         self.bn_input = torch.nn.BatchNorm1d(N_INPUT, momentum=0.5)
         for i in range(0, N_HIDDEN_LAYER):
             input_size = N_INPUT if i == 0 else N_HIDDEN
@@ -27,8 +28,9 @@ class Net(torch.nn.Module):
             setattr(self, 'bn%i' % i, bn)
             self.bns.append(bn)
 
-            dropout = torch.nn.Dropout(0.5)
-            setattr(self, 'dropout%i' % i, dropout)
+            # dropout = torch.nn.Dropout(0.01)
+            # setattr(self, 'dropout%i' % i, dropout)
+            # self.drops.append(dropout)
 
         self.predict = torch.nn.Linear(N_HIDDEN, N_OUTPUT)
         self._set_init(self.predict)
@@ -44,6 +46,7 @@ class Net(torch.nn.Module):
 
         for i in range(N_HIDDEN_LAYER):
             x = self.fcs[i](x)
+            # x = self.drops[i](x)
             x = self.bns[i](x)
             x = ACTIVATION(x)
         # output

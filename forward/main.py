@@ -8,6 +8,9 @@ from dataset import DataSet
 from net import Net
 from rich.progress import track
 
+LR = 0.00001
+EPOCH = 100000
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
@@ -23,10 +26,10 @@ def train(_model, dataSet):
     net = _model.to(device)
     # print(net)
     loss_func = F.mse_loss
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.000001)
+    optimizer = torch.optim.SGD(net.parameters(), lr=LR)
     x_list = []
     loss_list = []
-    for i in track(range(300000)):
+    for i in track(range(EPOCH)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
@@ -50,6 +53,11 @@ def train(_model, dataSet):
 if __name__ == '__main__':
     model = Net()
     print(model)
+    try:
+        model.load_state_dict(torch.load('model.pl', map_location=device))
+        model.train()
+    except:
+        pass
 
     dataSet = DataSet()
 

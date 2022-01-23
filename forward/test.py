@@ -3,9 +3,6 @@ import torch
 import matplotlib.pyplot as plt
 from net import Net
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(f'device: {device}')
-
 
 def test(worksheet, name):
     l_predict_list = []
@@ -58,6 +55,8 @@ def test(worksheet, name):
 
 
 if __name__ == '__main__':
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f'device: {device}')
     model = Net()
     model.load_state_dict(torch.load('model.pl', map_location=device))
 
