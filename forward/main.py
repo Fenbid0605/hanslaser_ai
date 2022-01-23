@@ -23,10 +23,10 @@ def train(_model, dataSet):
     net = _model.to(device)
     # print(net)
     loss_func = F.mse_loss
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.00001)
+    optimizer = torch.optim.SGD(net.parameters(), lr=0.000001)
     x_list = []
     loss_list = []
-    for i in track(range(50000)):
+    for i in track(range(300000)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)

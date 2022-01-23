@@ -2,8 +2,8 @@ import torch
 
 # Hyper parameters
 N_INPUT = 4
-N_HIDDEN_LAYER = 20
-N_HIDDEN = 100
+N_HIDDEN_LAYER = 30
+N_HIDDEN = 80
 N_OUTPUT = 3
 ACTIVATION = torch.tanh
 B_INIT = -0.2  # use a bad bias constant initializer

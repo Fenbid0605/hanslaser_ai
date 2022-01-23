@@ -25,7 +25,7 @@ def train(_model, dataSet):
     optimizer = torch.optim.SGD(net.parameters(), lr=0.000004)
     x_list = []
     loss_list = []
-    for i in track(range(50000)):
+    for i in track(range(20000)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
         loss = loss_func(prediction, y).to(device)
