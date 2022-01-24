@@ -8,9 +8,7 @@ from matplotlib import pyplot as plt
 from dataset import DataSet
 from net import Net
 from rich.progress import track
-
-LR = 0.000004
-EPOCH = 20000
+from config import LR, EPOCH
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
@@ -28,6 +26,8 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
+    # 固定步长衰减
+    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.65)
 
     x_list = []
     loss_list = []
@@ -38,10 +38,10 @@ def train(_model, dataSet):
         loss_list.append(loss.item())
 
         optimizer.zero_grad()
-
         loss.backward()
 
         optimizer.step()
+        step_lr.step()
 
         x_list.append(i)
 
@@ -58,11 +58,6 @@ def train(_model, dataSet):
 if __name__ == '__main__':
     model = Net()
     print(model)
-    try:
-        model.load_state_dict(torch.load('model.pl', map_location=device))
-        model.train()
-    except:
-        pass
 
     dataSet = DataSet()
 

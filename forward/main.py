@@ -9,7 +9,6 @@ from net import Net
 from rich.progress import track
 from config import LR, EPOCH
 
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
@@ -17,6 +16,9 @@ print(f'device: {device}')
 def train(_model, dataSet):
     x = dataSet.x_matrix.to(device)
     y = dataSet.y_matrix.to(device)
+
+    v_x = dataSet.vx_matrix.to(device)
+    v_y = dataSet.vy_matrix.to(device)
 
     # ff  批数据处理
     # torch_dataset = Data.TensorDataset(x, y)
@@ -26,22 +28,35 @@ def train(_model, dataSet):
     # print(net)
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
+    # 固定步长衰减
+    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.65)
+
     x_list = []
-    loss_list = []
+    train_loss_list = []
+    valid_loss_list = []
+
     for i in track(range(EPOCH)):
         # for step, (b_x, b_y) in enumerate(loader):  # step-批次
         prediction = net(x).to(device)
-        loss = loss_func(prediction, y).to(device)
-        loss_list.append(loss.item())
+        train_loss = loss_func(prediction, y).to(device)
+
+        prediction = net(v_x).to(device)
+        valid_loss = loss_func(prediction, v_y).to(device)
+
+        train_loss_list.append(train_loss.item())
+        valid_loss_list.append(valid_loss.item())
+
         x_list.append(i)
         optimizer.zero_grad()
-        loss.backward()
+        train_loss.backward()
         optimizer.step()
+        step_lr.step()
 
     # 绘图
     fig, ax = plt.subplots()
 
-    ax.plot(x_list, loss_list, label='loss')
+    ax.plot(x_list, train_loss_list, label='train_loss')
+    ax.plot(x_list, valid_loss_list, label='valid_loss')
     ax.legend()
 
     fig.suptitle('Loss')
@@ -52,11 +67,6 @@ def train(_model, dataSet):
 if __name__ == '__main__':
     model = Net()
     print(model)
-    try:
-        model.load_state_dict(torch.load('model.pl', map_location=device))
-        model.train()
-    except:
-        pass
 
     dataSet = DataSet()
 
