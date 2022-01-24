@@ -32,7 +32,7 @@ def train(_model, dataSet):
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
     # 固定步长衰减
     # step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
-    exp_lr = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
+    # exp_lr = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
     x_list = []
     train_loss_list = []
     valid_loss_list = []
@@ -54,7 +54,7 @@ def train(_model, dataSet):
         optimizer.zero_grad()
         train_loss.backward()
         optimizer.step()
-        exp_lr.step()
+        # exp_lr.step()
 
     # 绘图
     fig, ax = plt.subplots()
