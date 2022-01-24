@@ -7,9 +7,8 @@ from matplotlib import pyplot as plt
 from dataset import DataSet
 from net import Net
 from rich.progress import track
+from config import LR, EPOCH
 
-LR = 0.00001
-EPOCH = 100000
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')

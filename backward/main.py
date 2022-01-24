@@ -28,7 +28,6 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
-    # optimizer = torch.optim.Adam(net.parameters(), lr=LR)
 
     x_list = []
     loss_list = []
