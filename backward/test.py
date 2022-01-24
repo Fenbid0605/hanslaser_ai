@@ -86,4 +86,4 @@ if __name__ == '__main__':
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
     test(workbook.worksheets[0], 'Train')
-    test(workbook.worksheets[1], 'Vaild')
+    test(workbook.worksheets[1], 'Valid')

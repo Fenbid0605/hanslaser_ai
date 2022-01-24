@@ -26,8 +26,6 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
-    # 固定步长衰减
-    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.65)
 
     x_list = []
     loss_list = []
@@ -41,7 +39,6 @@ def train(_model, dataSet):
         loss.backward()
 
         optimizer.step()
-        step_lr.step()
 
         x_list.append(i)
 
