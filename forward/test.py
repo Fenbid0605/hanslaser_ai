@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from net import Net
 
 
-def test(worksheet, name):
+def test(_model, worksheet, name):
     l_predict_list = []
     a_predict_list = []
     b_predict_list = []
@@ -17,7 +17,7 @@ def test(worksheet, name):
         to_predict = torch.Tensor([[float(c.value) for c in row[0:4]]])
         # print(to_predict)
         print('Predict')
-        predict = model(to_predict)[0]
+        predict = _model(to_predict)[0]
         print(predict)
         print('Actual')
         print(torch.Tensor([float(c.value) for c in row[4:7]]))
@@ -63,5 +63,5 @@ if __name__ == '__main__':
     model.eval()
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
-    test(workbook.worksheets[0], 'Train')
-    test(workbook.worksheets[1], 'Valid')
+    test(model, workbook.worksheets[0], 'Train')
+    test(model, workbook.worksheets[1], 'Valid')

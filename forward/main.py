@@ -1,4 +1,5 @@
 # coding-utf8
+import openpyxl
 import torch
 import torch.utils.data as Data  # ff
 import torch.nn.functional as F
@@ -8,6 +9,7 @@ from dataset import DataSet
 from net import Net
 from rich.progress import track
 from config import LR, EPOCH
+from test import test
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
@@ -29,8 +31,8 @@ def train(_model, dataSet):
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
     # 固定步长衰减
-    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1000, gamma=0.65)
-
+    # step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
+    exp_lr = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
     x_list = []
     train_loss_list = []
     valid_loss_list = []
@@ -40,17 +42,19 @@ def train(_model, dataSet):
         prediction = net(x).to(device)
         train_loss = loss_func(prediction, y).to(device)
 
+        net.eval()
         prediction = net(v_x).to(device)
         valid_loss = loss_func(prediction, v_y).to(device)
+        net.train()
 
         train_loss_list.append(train_loss.item())
         valid_loss_list.append(valid_loss.item())
-
         x_list.append(i)
+
         optimizer.zero_grad()
         train_loss.backward()
         optimizer.step()
-        step_lr.step()
+        exp_lr.step()
 
     # 绘图
     fig, ax = plt.subplots()
@@ -73,3 +77,9 @@ if __name__ == '__main__':
     train(model, dataSet)
 
     torch.save(model.state_dict(), 'model.pl')
+
+    model.eval()
+
+    workbook = openpyxl.load_workbook('../data/data.xlsx')
+    test(model, workbook.worksheets[0], 'Train')
+    test(model, workbook.worksheets[1], 'Valid')
