@@ -21,7 +21,7 @@ class Net(torch.nn.Module):
             setattr(self, 'bn%i' % i, bn)
             self.bns.append(bn)
 
-            # dropout = torch.nn.Dropout(0.3)
+            # dropout = torch.nn.Dropout(0.5)
             # setattr(self, 'dropout%i' % i, dropout)
             # self.drops.append(dropout)
 
@@ -39,8 +39,8 @@ class Net(torch.nn.Module):
 
         for i in range(N_HIDDEN_LAYER):
             x = self.fcs[i](x)
-            x = self.bns[i](x)
             # x = self.drops[i](x)
+            x = self.bns[i](x)
             x = ACTIVATION(x)
         # output
         x = self.predict(x)

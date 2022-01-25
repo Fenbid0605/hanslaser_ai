@@ -3,6 +3,9 @@ import torch
 import matplotlib.pyplot as plt
 from net import Net
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(f'device: {device}')
+
 
 def test(_model, worksheet, name):
     l_predict_list = []
@@ -13,11 +16,12 @@ def test(_model, worksheet, name):
     b_actual_list = []
     X_list = []
     cnt = 0
+
+    to_predict = torch.Tensor([[float(c.value) for c in row[0:4]] for row in list(worksheet.rows)[1:]]).to(device)
+    predicts = _model(to_predict).to(device)
     for row in list(worksheet.rows)[1:]:
-        to_predict = torch.Tensor([[float(c.value) for c in row[0:4]]])
-        # print(to_predict)
         print('Predict')
-        predict = _model(to_predict)[0]
+        predict = predicts[cnt]
         print(predict)
         print('Actual')
         print(torch.Tensor([float(c.value) for c in row[4:7]]))
@@ -49,18 +53,17 @@ def test(_model, worksheet, name):
     axs[2].plot(X_list, b_predict_list, label='B_predict')
     axs[2].legend()
 
-    fig.suptitle('LAB')
+    fig.suptitle('%s-LAB' % name)
     plt.savefig('./%s-lab.png' % name)
     plt.show()
 
 
 if __name__ == '__main__':
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f'device: {device}')
     model = Net()
     model.load_state_dict(torch.load('model.pl', map_location=device))
 
     model.eval()
+    model.to(device)
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
     test(model, workbook.worksheets[0], 'Train')
