@@ -1,4 +1,6 @@
 # Hyper parameters
+import datetime
+
 import torch
 
 N_INPUT = 4
@@ -11,3 +13,13 @@ EPOCH = 1e4
 LR = 6e-5
 
 EPOCH = int(EPOCH)
+
+
+def save_config(loss):
+    with open('./config_log.txt', "a+") as f:
+        f.write(f"N_HIDDEN_LAYER: {N_HIDDEN_LAYER} \n")
+        f.write(f"N_HIDDEN: {N_HIDDEN} \n")
+        f.write(f"EPOCH: {EPOCH} \n")
+        f.write(f"LR: {LR} \n")
+        f.write(f"LOSS: {loss} \n")
+        f.write(f"time: {datetime.datetime.now()} \n\n")

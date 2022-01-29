@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from dataset import DataSet
 from net import Net
 from rich.progress import track
-from config import LR, EPOCH
+from config import LR, EPOCH, save_config
 from test import test
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -66,6 +66,9 @@ def train(_model, dataSet):
     fig.suptitle('Loss')
     plt.savefig('./loss.png')
     plt.show()
+
+    # 保存配置
+    save_config(train_loss_list[len(train_loss_list) - 4:])
 
 
 if __name__ == '__main__':
