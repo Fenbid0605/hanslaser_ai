@@ -1,7 +1,7 @@
 import torch
 import openpyxl
 import torch.nn.functional as F
-
+import random
 
 class DataSet:
     def __init__(self):
@@ -10,19 +10,26 @@ class DataSet:
         worksheet = workbook.worksheets[0]
         x_matrix = []
         y_matrix = []
+
+        # 测试集
+        # worksheet = workbook.worksheets[1]
+        vx_matrix = []
+        vy_matrix = []
+
+        random.seed(10)
         for row in list(worksheet.rows)[1:]:
-            x_matrix.append([float(c.value) for c in row[4:7]])
-            y_matrix.append([float(c.value) for c in row[0:4]])
+            # 随机生成测试集
+            random_number = random.randint(1, 100)
+            if random_number > 10:
+                x_matrix.append([float(c.value) for c in row[4:7]])
+                y_matrix.append([float(c.value) for c in row[0:4]])
+            else:
+                vx_matrix.append([float(c.value) for c in row[4:7]])
+                vy_matrix.append([float(c.value) for c in row[0:4]])
 
         self.x_matrix = torch.Tensor(x_matrix)
         self.y_matrix = torch.Tensor(y_matrix)
-
-        # 测试集
-        worksheet = workbook.worksheets[1]
-        vx_matrix = []
-        vy_matrix = []
-        for row in list(worksheet.rows)[1:]:
-            vx_matrix.append([float(c.value) for c in row[4:7]])
-            vy_matrix.append([float(c.value) for c in row[0:4]])
         self.vx_matrix = torch.Tensor(vx_matrix)
         self.vy_matrix = torch.Tensor(vy_matrix)
+
+

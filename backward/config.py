@@ -2,12 +2,12 @@
 import torch
 import datetime
 N_INPUT = 3
-N_HIDDEN_LAYER = 8
-N_HIDDEN = 34
+N_HIDDEN_LAYER = 20
+N_HIDDEN = 120
 N_OUTPUT = 4
-ACTIVATION = torch.relu
+ACTIVATION = torch.tanh
 B_INIT = -0.2  # use a bad bias constant initializer
-EPOCH = 10e4
+EPOCH = 1e5
 LR = 1e-5
 
 EPOCH = int(EPOCH)

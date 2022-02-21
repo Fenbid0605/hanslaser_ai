@@ -13,6 +13,8 @@ from config import LR, EPOCH
 import config
 from test import test
 
+import sys
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
@@ -36,20 +38,20 @@ def train(_model, dataSet):
     for i in track(range(EPOCH)):
         prediction = net(x).to(device)
         train_loss = loss_func(prediction, y).to(device)
-        train_loss_list.append(train_loss.item())
 
-        prediction = net(v_x).to(device)
         net.eval()
+        prediction = net(v_x).to(device)
         valid_loss = loss_func(prediction, v_y).to(device)
-        valid_loss_list.append(valid_loss.item())
         net.train()
 
         optimizer.zero_grad()
         train_loss.backward()
         optimizer.step()
 
+        train_loss_list.append(train_loss.item())
+        valid_loss_list.append(valid_loss.item())
         x_list.append(i)
-        if i % 9999 == 0:
+        if i % 1000 == 0:
             print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , valid_loss: {valid_loss.item()}")
 
     # 绘图
@@ -59,24 +61,26 @@ def train(_model, dataSet):
     ax.plot(x_list, valid_loss_list, label='valid_loss')
     ax.legend()
 
-    loss = train_loss_list[len(train_loss_list) - 4:]
-    print(f'loss:{loss}')
-    config.save_config(loss=loss) #记录参数日志
+    # 保存配置
+    config.save_config(train_loss_list[len(train_loss_list) - 4:])  # 记录参数日志
 
-    plt.savefig('./result/loss.png')
     fig.suptitle('Loss')
+    plt.savefig('./result/loss.png')
     plt.show()
 
 
 if __name__ == '__main__':
     model = Net()
-    # print(model)
 
-    try:
-        model.load_state_dict(torch.load('model.pl', map_location=device))
-        model.train()
-    except:
-        pass
+    if len(sys.argv) == 2 and sys.argv[1] == 'carry':
+        print(f"{sys.argv[1]} model~")
+        try:
+            model.load_state_dict(torch.load('model.pl', map_location=device))
+            model.train()
+        except:
+            pass
+    else:
+        print("new model~")
 
     dataSet = DataSet()
 
@@ -87,5 +91,5 @@ if __name__ == '__main__':
     model.eval()
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
-    test(model, workbook.worksheets[0], 'Train')
-    test(model, workbook.worksheets[1], 'Valid')
+    test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
+    test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')
