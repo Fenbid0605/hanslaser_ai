@@ -1,13 +1,15 @@
 import openpyxl
 import torch
 import matplotlib.pyplot as plt
+
+from dataset import DataSet
 from net import Net
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f'device: {device}')
 
 
-def test(_model, worksheet, name):
+def test(_model, to_predict, actual, name):
     l_predict_list = []
     a_predict_list = []
     b_predict_list = []
@@ -17,22 +19,22 @@ def test(_model, worksheet, name):
     X_list = []
     cnt = 0
 
-    to_predict = torch.Tensor([[float(c.value) for c in row[0:4]] for row in list(worksheet.rows)[1:]]).to(device)
     predicts = _model(to_predict).to(device)
-    for row in list(worksheet.rows)[1:]:
+    actual = actual.to(device)
+    for row in actual:
         print('Predict')
         predict = predicts[cnt]
         print(predict)
         print('Actual')
-        print(torch.Tensor([float(c.value) for c in row[4:7]]))
+        print(row)
 
         l_predict_list.append(predict[0].item())
         a_predict_list.append(predict[1].item())
         b_predict_list.append(predict[2].item())
 
-        l_actual_list.append(row[4].value)
-        a_actual_list.append(row[5].value)
-        b_actual_list.append(row[6].value)
+        l_actual_list.append(row[0].item())
+        a_actual_list.append(row[1].item())
+        b_actual_list.append(row[2].item())
 
         X_list.append(cnt)
         cnt += 1
@@ -65,6 +67,6 @@ if __name__ == '__main__':
     model.eval()
     model.to(device)
 
-    workbook = openpyxl.load_workbook('../data/data.xlsx')
-    test(model, workbook.worksheets[0], 'Train')
-    test(model, workbook.worksheets[1], 'Valid')
+    dataSet = DataSet()
+    test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
+    test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')

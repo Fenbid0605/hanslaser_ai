@@ -84,5 +84,5 @@ if __name__ == '__main__':
     model.eval()
 
     workbook = openpyxl.load_workbook('../data/data.xlsx')
-    test(model, workbook.worksheets[0], 'Train')
-    test(model, workbook.worksheets[1], 'Valid')
+    test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
+    test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')
