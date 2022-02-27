@@ -2,8 +2,8 @@
 import torch
 import math
 import numpy as np
-from net import Net
-from dataset import DataSet
+from forward.net import Net
+from forward.dataset import DataSet
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -34,7 +34,7 @@ class GA(object):
 
     def F(self, x):
         model = Net()
-        model.load_state_dict(torch.load('model.pl', map_location=device))
+        model.load_state_dict(torch.load('../forward/model.pl', map_location=device))
         model.eval()
         lab = model(x)
         return lab
