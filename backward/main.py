@@ -20,6 +20,9 @@ print(f'device: {device}')
 
 
 def train(_model, dataSet):
+    # 打印参数，便于终端看见
+    config.print_config()
+
     x = dataSet.x_matrix.to(device)
     y = dataSet.y_matrix.to(device)
 
@@ -54,6 +57,10 @@ def train(_model, dataSet):
         if i % 1000 == 0:
             print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , valid_loss: {valid_loss.item()}")
 
+        if i / 1000 == 5 and len(sys.argv) == 2 and sys.argv[1] == 'test':
+            config.save_config(train_loss_list[len(train_loss_list) - 4:], True)  # 记录参数日志
+            sys.exit(0)
+
     # 绘图
     fig, ax = plt.subplots()
 
@@ -78,6 +85,7 @@ if __name__ == '__main__':
             model.load_state_dict(torch.load('model.pl', map_location=device))
             model.train()
         except:
+            print('load model fail!')
             pass
     else:
         print("new model~")

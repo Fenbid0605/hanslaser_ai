@@ -2,4 +2,4 @@
 .DS_Store
 ~$data.xlsx
 *.pyc
-/backward/result/config_log.txt
+backward/result/config_log.txt
