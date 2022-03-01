@@ -6,8 +6,8 @@ import torch
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
 
-from dataset import DataSet
-from net import Net
+from dataset import DataSet_
+from net_ import Net
 from rich.progress import track
 from config import LR, EPOCH
 import config
@@ -21,7 +21,7 @@ print(f'device: {device}')
 
 def train(_model_1, _model_2, dataSet):
     # 打印参数，便于终端看见
-    config.print_config()
+    config.print_config_(config.NET1(), config.NET2())
 
     x = dataSet.x_matrix.to(device)
     y_1 = dataSet.y_matrix_1.to(device)
@@ -63,7 +63,7 @@ def train(_model_1, _model_2, dataSet):
         train_loss_list_1.append(train_loss_1.item())
         valid_loss_list_1.append(valid_loss_1.item())
 
-        # Q频、Q释放
+        # A 、 Q频、Q释放
         prediction_2 = net_2(x).to(device)
         train_loss_2 = loss_func_2(prediction_2, y_2).to(device)
 
@@ -96,73 +96,17 @@ def train(_model_1, _model_2, dataSet):
     ax.legend()
 
     # 保存配置
-    config.save_config(train_loss_list_1[len(train_loss_list_1) - 4:], is_two_net=True)  # 记录参数日志
+    config.save_config_two_net(train_loss_list_1[len(train_loss_list_1) - 4:],
+                               train_loss_list_2[len(train_loss_list_2) - 4:], config.NET1(), config.NET2())  # 记录参数日志
 
     fig.suptitle('Loss_')
     plt.savefig('./result/loss_.png')
     plt.show()
 
 
-def train_2(_model_2, dataSet):
-    # 打印参数，便于终端看见
-    config.print_config()
-
-    x = dataSet.x_matrix.to(device)
-    y_2 = dataSet.y_matrix_2.to(device)
-
-    v_x = dataSet.vx_matrix.to(device)
-    vy_2 = dataSet.vy_matrix_2.to(device)
-
-    net_2 = _model_2.to(device)
-
-    loss_func_2 = F.mse_loss
-    optimizer_2 = torch.optim.SGD(net_2.parameters(), lr=LR)
-
-    x_list = []
-
-    train_loss_list_2 = []
-    valid_loss_list_2 = []
-
-    for i in track(range(EPOCH)):
-        # Q频、Q释放
-        prediction_2 = net_2(x).to(device)
-        train_loss_2 = loss_func_2(prediction_2, y_2).to(device)
-
-        net_2.eval()
-        prediction_2 = net_2(v_x).to(device)
-        valid_loss_2 = loss_func_2(prediction_2, vy_2).to(device)
-        net_2.train()
-
-        optimizer_2.zero_grad()
-        train_loss_2.backward()
-        optimizer_2.step()
-
-        train_loss_list_2.append(train_loss_2.item())
-        valid_loss_list_2.append(valid_loss_2.item())
-
-        x_list.append(i)
-        if i % 1000 == 0:
-            print(f"EPOCH: {i} ,train_loss_2: {train_loss_2.item()} , valid_loss_2: {valid_loss_2.item()}")
-
-    # 绘图
-    fig, ax = plt.subplots()
-
-    ax.plot(x_list, train_loss_list_2, label='train_loss_2')
-    ax.plot(x_list, valid_loss_list_2, label='valid_loss_2')
-
-    ax.legend()
-
-    # 保存配置
-    config.save_config(train_loss_list_2[len(train_loss_list_2) - 4:], is_two_net=True)  # 记录参数日志
-
-    fig.suptitle('Loss_2')
-    plt.savefig('./result/loss_2.png')
-    plt.show()
-
-
 if __name__ == '__main__':
-    model_1 = Net()
-    model_2 = Net()
+    model_1 = Net(config.NET1())
+    model_2 = Net(config.NET2())
 
     if len(sys.argv) == 2 and sys.argv[1] == 'carry':
         print(f"{sys.argv[1]} model~")
@@ -177,7 +121,7 @@ if __name__ == '__main__':
     else:
         print("new model~")
 
-    dataSet = DataSet()
+    dataSet = DataSet_()
 
     train(model_1, model_2, dataSet)
     # train_2(model_2, dataSet)

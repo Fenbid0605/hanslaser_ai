@@ -113,13 +113,13 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
         print('Actual')
         print(row)
 
-        i_predict_list.append(predict_1[0].item())
-        speed_predict_list.append(predict_1[1].item())
-        Qpin_predict_list.append(predict_2[0].item())
-        QshiFang_predict_list.append(predict_2[1].item())
+        speed_predict_list.append(predict_1[0].item())
+        i_predict_list.append(predict_2[0].item())
+        Qpin_predict_list.append(predict_2[1].item())
+        QshiFang_predict_list.append(predict_2[2].item())
 
-        i_actual_list.append(row[0].item())
-        speed_actual_list.append(row[1].item())
+        speed_actual_list.append(row[0].item())
+        i_actual_list.append(row[1].item())
         Qpin_actual_list.append(row[2].item())
         QshiFang_actual_list.append(row[3].item())
 
