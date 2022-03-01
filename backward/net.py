@@ -45,3 +45,4 @@ class Net(torch.nn.Module):
         # output
         x = self.predict(x)
         return x
+

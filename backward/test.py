@@ -7,10 +7,12 @@ from net import Net
 POINT_SIZE = 4
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
 # print(f'device: {device}')
 
 
-def test(_model,  to_predict, actual, name):
+def test(_model, to_predict, actual, name):
     i_predict_list = []  # 电流
     speed_predict_list = []  # 打标速度
     Qpin_predict_list = []  # Q频
@@ -79,6 +81,73 @@ def test(_model,  to_predict, actual, name):
 
     fig.suptitle(f'./result/{name} - I_speed_Qpin_QshiFang')
     plt.savefig('./result/%s.png' % name)
+    plt.show()
+
+
+def test_two_net(_model_1, _model_2, to_predict, actual, name):
+    i_predict_list = []  # 电流
+    speed_predict_list = []  # 打标速度
+    Qpin_predict_list = []  # Q频
+    QshiFang_predict_list = []  # Q释放
+
+    i_actual_list = []  # 电流
+    speed_actual_list = []  # 打标速度
+    Qpin_actual_list = []  # Q频
+    QshiFang_actual_list = []  # Q释放
+
+    X_list = []
+    cnt = 0
+
+    predicts_1 = _model_1(to_predict).to(device)
+
+    predicts_2 = _model_2(to_predict).to(device)
+
+    actual = actual.to(device)
+
+    for row in actual:
+        print('Predict_1')
+        predict_1 = predicts_1[cnt]
+        predict_2 = predicts_2[cnt]
+        print(predict_1)
+        print(predict_2)
+        print('Actual')
+        print(row)
+
+        i_predict_list.append(predict_1[0].item())
+        speed_predict_list.append(predict_1[1].item())
+        Qpin_predict_list.append(predict_2[0].item())
+        QshiFang_predict_list.append(predict_2[1].item())
+
+        i_actual_list.append(row[0].item())
+        speed_actual_list.append(row[1].item())
+        Qpin_actual_list.append(row[2].item())
+        QshiFang_actual_list.append(row[3].item())
+
+        X_list.append(cnt)
+        cnt += 1
+        print('=========')
+
+    # 绘图
+    fig, axs = plt.subplots(1, 4, figsize=(24, 5))
+
+    axs[0].plot(X_list, i_actual_list, c='royalblue', label='i_actual')
+    axs[0].plot(X_list, i_predict_list, c='darkorange', label='i_predict')
+    axs[0].legend()
+
+    axs[1].plot(X_list, speed_actual_list, c='royalblue', label='speed_actual')
+    axs[1].plot(X_list, speed_predict_list, c='darkorange', label='speed_predict')
+    axs[1].legend()
+
+    axs[2].plot(X_list, Qpin_actual_list, c='royalblue', label='Qpin_actual')
+    axs[2].plot(X_list, Qpin_predict_list, c='darkorange', label='Qpin_predict')
+    axs[2].legend()
+
+    axs[3].plot(X_list, QshiFang_actual_list, c='royalblue', label='QshiFang_actual')
+    axs[3].plot(X_list, QshiFang_predict_list, c='darkorange', label='QshiFang_predict')
+    axs[3].legend()
+
+    fig.suptitle(f'{name} - I_speed_Qpin_QshiFang - TWO_NET')
+    plt.savefig('./result/%s_twoNet.png' % name)
     plt.show()
 
 
