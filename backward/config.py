@@ -17,10 +17,10 @@ EPOCH = int(EPOCH)
 class NET1:  # 打标速度
     def __init__(self):
         self.N_INPUT = 3
-        self.N_HIDDEN_LAYER = 12
-        self.N_HIDDEN = 36
+        self.N_HIDDEN_LAYER = 5
+        self.N_HIDDEN = 6
         self.N_OUTPUT = 1
-        self.EPOCH = 2e5
+        self.EPOCH = 2e6
 
 
 class NET2:  # a,q频，q释放
@@ -29,7 +29,7 @@ class NET2:  # a,q频，q释放
         self.N_HIDDEN_LAYER = 32
         self.N_HIDDEN = 94
         self.N_OUTPUT = 3
-        self.EPOCH = 2e5
+        self.EPOCH = 4e5
 
 
 def print_config():

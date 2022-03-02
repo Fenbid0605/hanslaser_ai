@@ -36,6 +36,7 @@ class DataSet:
         self.vy_matrix = torch.Tensor(vy_matrix)
 
 
+# 仅使用backward
 class DataSet_:
     def __init__(self):
         workbook = openpyxl.load_workbook('../data/data_for_two_net.xlsx')
