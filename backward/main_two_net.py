@@ -48,6 +48,7 @@ def train(_model_1, _model_2, dataSet):
     valid_loss_list_2 = []
 
     for i in track(range(EPOCH)):
+        # 打标速度
         prediction_1 = net_1(x).to(device)
         train_loss_1 = loss_func_1(prediction_1, y_1).to(device)
 
@@ -105,8 +106,8 @@ def train(_model_1, _model_2, dataSet):
 
 
 if __name__ == '__main__':
-    model_1 = Net(config.NET1())
-    model_2 = Net(config.NET2())
+    model_1 = Net(config.NET1())  # 打标速度
+    model_2 = Net(config.NET2())  # A、Q频、Q释放
 
     if len(sys.argv) == 2 and sys.argv[1] == 'carry':
         print(f"{sys.argv[1]} model~")
@@ -124,7 +125,6 @@ if __name__ == '__main__':
     dataSet = DataSet_()
 
     train(model_1, model_2, dataSet)
-    # train_2(model_2, dataSet)
 
     torch.save(model_1.state_dict(), 'model_1.pl')
     torch.save(model_2.state_dict(), 'model_2.pl')

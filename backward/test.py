@@ -9,9 +9,6 @@ POINT_SIZE = 4
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# print(f'device: {device}')
-
-
 def test(_model, to_predict, actual, name):
     i_predict_list = []  # 电流
     speed_predict_list = []  # 打标速度
@@ -99,7 +96,6 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
     cnt = 0
 
     predicts_1 = _model_1(to_predict).to(device)
-
     predicts_2 = _model_2(to_predict).to(device)
 
     actual = actual.to(device)
@@ -108,8 +104,7 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
         print('Predict_1')
         predict_1 = predicts_1[cnt]
         predict_2 = predicts_2[cnt]
-        print(predict_1)
-        print(predict_2)
+        print(predict_1, predict_2)
         print('Actual')
         print(row)
 
@@ -158,9 +153,6 @@ if __name__ == '__main__':
     model.eval()
     model.to(device)
 
-    # workbook = openpyxl.load_workbook('../data/data.xlsx')
-    # test(model, workbook.worksheets[0], 'Train')
-    # test(model, workbook.worksheets[1], 'Valid')
     dataSet = DataSet()
     test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
     test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')

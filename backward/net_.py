@@ -1,9 +1,10 @@
 # 次要，仅适用于两个模型
 
 import torch
-from config import ACTIVATION, N_HIDDEN_LAYER, B_INIT
+from config import ACTIVATION, B_INIT
 
-# 代码越写越乱了，-。-
+
+# 代码越写越乱了，-。- ,可传入config
 class Net(torch.nn.Module):
     def __init__(self, CONFIG):
         self.n_hidden_layer = CONFIG.N_HIDDEN_LAYER
