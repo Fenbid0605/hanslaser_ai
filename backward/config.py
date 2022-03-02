@@ -17,8 +17,8 @@ EPOCH = int(EPOCH)
 class NET1:  # 打标速度
     def __init__(self):
         self.N_INPUT = 3
-        self.N_HIDDEN_LAYER = 5
-        self.N_HIDDEN = 6
+        self.N_HIDDEN_LAYER = 12
+        self.N_HIDDEN = 24
         self.N_OUTPUT = 1
         self.EPOCH = 2e6
 
