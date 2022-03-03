@@ -67,8 +67,8 @@ def train(_model, dataSet):
     plt.savefig('./loss.png')
     plt.show()
 
-    # 保存配置
-    save_config(train_loss_list[len(train_loss_list) - 4:])
+    # 保存配置日志，并记录最后一次训练的 loss
+    save_config(train_loss_list[-1], valid_loss_list[-1])
 
 
 if __name__ == '__main__':
