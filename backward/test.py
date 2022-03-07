@@ -1,7 +1,7 @@
 import openpyxl
 import torch
 from matplotlib import pyplot as plt
-from dataset import DataSet_backward
+from dataset import DataSet_backward, DataSet
 from net import Net
 from net_backward import Net as Net_bcakward
 import config
@@ -152,9 +152,8 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
 
 if __name__ == '__main__':
 
-    dataSet = DataSet_backward()
-
     if len(sys.argv) == 2 and sys.argv[1] == 'two_model':
+        dataSet = DataSet_backward()
         print(f"test two model~")
         model_1 = Net_bcakward(config.NET1())  # 打标速度
         model_2 = Net_bcakward(config.NET2())  # a,q频，q释放
@@ -171,6 +170,7 @@ if __name__ == '__main__':
             print('load model fail!')
             pass
     else:
+        dataSet = DataSet()
         print("test model~")
         model = Net()
         model.load_state_dict(torch.load('model.pl', map_location=device))
