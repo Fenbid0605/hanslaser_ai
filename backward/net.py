@@ -21,9 +21,9 @@ class Net(torch.nn.Module):
             setattr(self, 'bn%i' % i, bn)
             self.bns.append(bn)
 
-            # dropout = torch.nn.Dropout(0.01)
-            # setattr(self, 'dropout%i' % i, dropout)
-            # self.drops.append(dropout)
+            dropout = torch.nn.Dropout(0.01)
+            setattr(self, 'dropout%i' % i, dropout)
+            self.drops.append(dropout)
 
         self.predict = torch.nn.Linear(N_HIDDEN, N_OUTPUT)
         self._set_init(self.predict)

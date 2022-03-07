@@ -3,6 +3,9 @@ import torch
 from matplotlib import pyplot as plt
 from dataset import DataSet
 from net import Net
+from net_backward import Net as Net_bcakward
+import config
+import sys
 
 POINT_SIZE = 4
 
@@ -81,6 +84,7 @@ def test(_model, to_predict, actual, name):
     plt.show()
 
 
+# 两个模型的test
 def test_two_net(_model_1, _model_2, to_predict, actual, name):
     i_predict_list = []  # 电流
     speed_predict_list = []  # 打标速度
@@ -147,12 +151,32 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
 
 
 if __name__ == '__main__':
-    model = Net()
-    model.load_state_dict(torch.load('model.pl', map_location=device))
-
-    model.eval()
-    model.to(device)
 
     dataSet = DataSet()
-    test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
-    test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')
+
+    if len(sys.argv) == 2 and sys.argv[1] == 'two_model':
+        print(f"test two model~")
+        model_1 = Net_bcakward(config.NET1())  # 打标速度
+        model_2 = Net_bcakward(config.NET2())  # a,q频，q释放
+        try:
+            model_1.load_state_dict(torch.load('model_1.pl', map_location=device))
+            model_2.load_state_dict(torch.load('model_2.pl', map_location=device))
+            model_1.eval()
+            model_2.eval()
+            model_1.to(device)
+            model_2.to(device)
+            test_two_net(model_1, model_2, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
+            test_two_net(model_1, model_2, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')
+        except:
+            print('load model fail!')
+            pass
+    else:
+        print("test model~")
+        model = Net()
+        model.load_state_dict(torch.load('model.pl', map_location=device))
+
+        model.eval()
+        model.to(device)
+
+        test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
+        test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')

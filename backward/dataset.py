@@ -12,12 +12,10 @@ class DataSet:
         x_matrix = []
         y_matrix = []
 
-
         # 测试集
         # worksheet = workbook.worksheets[1]
         vx_matrix = []
         vy_matrix = []
-
 
         random.seed(10)
         for row in list(worksheet.rows)[1:]:
@@ -36,10 +34,10 @@ class DataSet:
         self.vy_matrix = torch.Tensor(vy_matrix)
 
 
-# 仅使用backward
-class DataSet_:
+# 仅适用backward
+class DataSet_backward:
     def __init__(self):
-        workbook = openpyxl.load_workbook('../data/data_for_two_net.xlsx')
+        workbook = openpyxl.load_workbook('../data/data_for_two_net.xlsx')  # 修改了打标速度的列位置，为0
         # 训练集
         worksheet = workbook.worksheets[0]
         x_matrix = []
@@ -78,10 +76,7 @@ class DataSet_:
         self.vx_matrix = torch.Tensor(vx_matrix)
         self.vy_matrix = torch.Tensor(vy_matrix)
 
-
         self.y_matrix_1 = torch.Tensor(y_matrix_1)
         self.y_matrix_2 = torch.Tensor(y_matrix_2)
         self.vy_matrix_1 = torch.Tensor(vy_matrix_1)
         self.vy_matrix_2 = torch.Tensor(vy_matrix_2)
-
-

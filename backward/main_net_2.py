@@ -3,8 +3,8 @@ import torch
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
 
-from dataset import DataSet_
-from net_ import Net
+from dataset import DataSet_backward
+from net_backward import Net
 from rich.progress import track
 from config import LR
 import config
@@ -71,10 +71,11 @@ def train(_model, y_matrix, vy_matrix, CONFIG, net_name="NET_?"):
     plt.show()
 
 
+# 代码与 mian_net 一致
 if __name__ == '__main__':
     model_1 = Net(config.NET1())  # 打标速度
-    model_2 = Net(config.NET2())  # 打标速度
-    dataSet = DataSet_()
+    model_2 = Net(config.NET2())  # a,q频，q释放
+    dataSet = DataSet_backward()
 
     # 这里写的太冗余了。。。有时间改动只根据输入就可以跑，不ifelse了。。
     if len(sys.argv) >= 3 and sys.argv[1] == 'model_1':

@@ -2,6 +2,7 @@
 import torch
 import datetime
 
+# 通用单个
 N_INPUT = 3
 N_HIDDEN_LAYER = 40
 N_HIDDEN = 300
@@ -17,10 +18,11 @@ EPOCH = int(EPOCH)
 class NET1:  # 打标速度
     def __init__(self):
         self.N_INPUT = 3
-        self.N_HIDDEN_LAYER = 12
-        self.N_HIDDEN = 24
+        self.N_HIDDEN_LAYER = 18
+        self.ACTIVATION = torch.sigmoid
+        self.N_HIDDEN = 68
         self.N_OUTPUT = 1
-        self.EPOCH = 2e6
+        self.EPOCH = 4e6
 
 
 class NET2:  # a,q频，q释放
@@ -28,8 +30,9 @@ class NET2:  # a,q频，q释放
         self.N_INPUT = 3
         self.N_HIDDEN_LAYER = 32
         self.N_HIDDEN = 94
+        self.ACTIVATION = torch.sigmoid
         self.N_OUTPUT = 3
-        self.EPOCH = 4e5
+        self.EPOCH = 3e6
 
 
 def print_config():
@@ -59,9 +62,20 @@ def print_config_net(net):
     print(f"N_HIDDEN_LAYER: {net.N_HIDDEN_LAYER}")
     print(f"N_HIDDEN: {net.N_HIDDEN}")
     print(f"EPOCH: {net.EPOCH}")
-    print(f"ACTIVATION: {ACTIVATION}")
+    print(f"ACTIVATION: {net.ACTIVATION}")
     print(f"LR:{LR}")
     print("===========")
+
+
+def save_config_net(loss, net, net_name):
+    with open('./result/config_log.txt', "a+") as f:  # 只需要将之前的”w"改为“a"即可，代表追加内容
+        f.write(f"[ {net_name} ] \n")
+        f.write(f"N_HIDDEN_LAYER: {net.N_HIDDEN_LAYER} \n")
+        f.write(f"N_HIDDEN: {net.N_HIDDEN} \n")
+        f.write(f"EPOCH: {net.EPOCH} \n")
+        f.write(f"LR: {LR} \n")
+        f.write(f"LOSS: {loss} \n")
+        f.write(f"time: {datetime.datetime.now()} \n\n")
 
 
 def print_config_two_net(net1, net2):
@@ -77,17 +91,6 @@ def print_config_two_net(net1, net2):
     print("========")
     print(f"ACTIVATION: {ACTIVATION}")
     print(f" LR:{LR}")
-
-
-def save_config_net(loss, net, net_name):
-    with open('./result/config_log.txt', "a+") as f:  # 只需要将之前的”w"改为“a"即可，代表追加内容
-        f.write(f"[ {net_name} ] \n")
-        f.write(f"N_HIDDEN_LAYER: {net.N_HIDDEN_LAYER} \n")
-        f.write(f"N_HIDDEN: {net.N_HIDDEN} \n")
-        f.write(f"EPOCH: {net.EPOCH} \n")
-        f.write(f"LR: {LR} \n")
-        f.write(f"LOSS: {loss} \n")
-        f.write(f"time: {datetime.datetime.now()} \n\n")
 
 
 def save_config_two_net(loss_1, loss_2, net1, net2, is_test=False):

@@ -1,13 +1,14 @@
 # 次要，仅适用于两个模型
 
 import torch
-from config import ACTIVATION, B_INIT
+from config import B_INIT
 
 
-# 代码越写越乱了，-。- ,可传入config
+# 参数以传入CONFIG
 class Net(torch.nn.Module):
     def __init__(self, CONFIG):
         self.n_hidden_layer = CONFIG.N_HIDDEN_LAYER
+        self.ACTIVATION = CONFIG.ACTIVATION
         # 初始网络的内部结构
         super(Net, self).__init__()
         self.fcs = []
@@ -45,7 +46,7 @@ class Net(torch.nn.Module):
             x = self.fcs[i](x)
             x = self.drops[i](x)
             x = self.bns[i](x)
-            x = ACTIVATION(x)
+            x = self.ACTIVATION(x)
         # output
         x = self.predict(x)
         return x

@@ -6,8 +6,8 @@ import torch
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
 
-from dataset import DataSet_
-from net_ import Net
+from dataset import DataSet_backward
+from net_backward import Net
 from rich.progress import track
 from config import LR, EPOCH
 import config
@@ -105,6 +105,7 @@ def train(_model_1, _model_2, dataSet):
     plt.show()
 
 
+# 两个模型一起训练
 if __name__ == '__main__':
     model_1 = Net(config.NET1())  # 打标速度
     model_2 = Net(config.NET2())  # A、Q频、Q释放
@@ -122,7 +123,7 @@ if __name__ == '__main__':
     else:
         print("new model~")
 
-    dataSet = DataSet_()
+    dataSet = DataSet_backward()
 
     train(model_1, model_2, dataSet)
 
