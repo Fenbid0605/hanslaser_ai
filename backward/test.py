@@ -1,7 +1,7 @@
 import openpyxl
 import torch
 from matplotlib import pyplot as plt
-from dataset import DataSet
+from dataset import DataSet_backward
 from net import Net
 from net_backward import Net as Net_bcakward
 import config
@@ -152,7 +152,7 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
 
 if __name__ == '__main__':
 
-    dataSet = DataSet()
+    dataSet = DataSet_backward()
 
     if len(sys.argv) == 2 and sys.argv[1] == 'two_model':
         print(f"test two model~")
