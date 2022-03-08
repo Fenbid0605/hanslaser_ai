@@ -31,8 +31,8 @@ def test(_back_model, _front_model, dataSet):
 
     # 正向
     front_net = _front_model.to(device)
-    for i, row in enumerate(list(worksheet.rows)[1:]):
-        to_predict = prediction_x[i].cpu().detach().numpy()
+    for to_predict in prediction_x:
+        to_predict = to_predict.cpu().detach().numpy()
         to_predict = torch.tensor(numpy.array([to_predict])).to(device)
         predict = front_net(to_predict)[0]
 
@@ -40,9 +40,9 @@ def test(_back_model, _front_model, dataSet):
         a_predict_list.append(predict[1].item())
         b_predict_list.append(predict[2].item())
 
-        l_actual_list.append(row[4].value)
-        a_actual_list.append(row[5].value)
-        b_actual_list.append(row[6].value)
+        # l_actual_list.append(row[4].value)
+        # a_actual_list.append(row[5].value)
+        # b_actual_list.append(row[6].value)
 
         X_list.append(cnt)
         cnt += 1
@@ -50,15 +50,15 @@ def test(_back_model, _front_model, dataSet):
     # 绘图
     fig, axs = plt.subplots(1, 3, figsize=(9, 3))
 
-    axs[0].plot(X_list, l_actual_list, label='L_actual')
+    # axs[0].plot(X_list, l_actual_list, label='L_actual')
     axs[0].plot(X_list, l_predict_list, label='L_predict')
     axs[0].legend()
 
-    axs[1].plot(X_list, a_actual_list, label='A_actual')
+    # axs[1].plot(X_list, a_actual_list, label='A_actual')
     axs[1].plot(X_list, a_predict_list, label='A_predict')
     axs[1].legend()
 
-    axs[2].plot(X_list, b_actual_list, label='B_actual')
+    # axs[2].plot(X_list, b_actual_list, label='B_actual')
     axs[2].plot(X_list, b_predict_list, label='B_predict')
     axs[2].legend()
 

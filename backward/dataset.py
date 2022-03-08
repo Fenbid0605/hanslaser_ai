@@ -1,6 +1,5 @@
 import torch
 import openpyxl
-import torch.nn.functional as F
 import random
 
 
@@ -21,12 +20,15 @@ class DataSet:
         for row in list(worksheet.rows)[1:]:
             # 随机生成测试集
             random_number = random.randint(1, 100)
+            x = [float(c.value) for c in row[4:7]]
+            y = [float(c.value) for c in row[0:4]]
+            y[1] /= 100
             if random_number > 10:
-                x_matrix.append([float(c.value) for c in row[4:7]])
-                y_matrix.append([float(c.value) for c in row[0:4]])
+                x_matrix.append(x)
+                y_matrix.append(y)
             else:
-                vx_matrix.append([float(c.value) for c in row[4:7]])
-                vy_matrix.append([float(c.value) for c in row[0:4]])
+                vx_matrix.append(x)
+                vy_matrix.append(y)
 
         self.x_matrix = torch.Tensor(x_matrix)
         self.y_matrix = torch.Tensor(y_matrix)

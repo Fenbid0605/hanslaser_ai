@@ -1,5 +1,5 @@
 import torch
-from config import N_INPUT, N_HIDDEN_LAYER, N_HIDDEN, N_OUTPUT, ACTIVATION, B_INIT
+from backward.config import N_INPUT, N_HIDDEN_LAYER, N_HIDDEN, N_OUTPUT, ACTIVATION, B_INIT
 
 
 class Net(torch.nn.Module):
@@ -39,7 +39,7 @@ class Net(torch.nn.Module):
 
         for i in range(N_HIDDEN_LAYER):
             x = self.fcs[i](x)
-            # x = self.drops[i](x)
+            x = self.drops[i](x)
             x = self.bns[i](x)
             x = ACTIVATION(x)
         # output

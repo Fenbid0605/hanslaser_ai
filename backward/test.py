@@ -34,6 +34,8 @@ def test(_model, to_predict, actual, name):
     for row in actual:
         print('Predict')
         predict = predicts[cnt]
+        predict[1] *= 100
+        row[1] *= 100
         print(predict)
         print('Actual')
         print(row)
@@ -151,7 +153,6 @@ def test_two_net(_model_1, _model_2, to_predict, actual, name):
 
 
 if __name__ == '__main__':
-
     if len(sys.argv) == 2 and sys.argv[1] == 'two_model':
         dataSet = DataSet_backward()
         print(f"test two model~")
@@ -172,6 +173,7 @@ if __name__ == '__main__':
     else:
         dataSet = DataSet()
         print("test model~")
+        dataSet = DataSet()
         model = Net()
         model.load_state_dict(torch.load('model.pl', map_location=device))
 

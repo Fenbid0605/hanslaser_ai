@@ -4,12 +4,12 @@ import datetime
 
 # 通用单个
 N_INPUT = 3
-N_HIDDEN_LAYER = 40
-N_HIDDEN = 300
+N_HIDDEN_LAYER = 10
+N_HIDDEN = 1000
 N_OUTPUT = 4
-ACTIVATION = torch.sigmoid
+ACTIVATION = torch.relu
 B_INIT = -0.2  # use a bad bias constant initializer
-EPOCH = 0.02e5
+EPOCH = 1e6
 LR = 1e-5
 
 EPOCH = int(EPOCH)

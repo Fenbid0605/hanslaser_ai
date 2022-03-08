@@ -14,7 +14,7 @@ class DataSet:
         # worksheet = workbook.worksheets[1]
         vx_matrix = []
         vy_matrix = []
-        random.seed(10)
+        random.seed(1003)
         for row in list(worksheet.rows)[1:]:
             # 随机生成测试集
             random_number = random.randint(1, 100)

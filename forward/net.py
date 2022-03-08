@@ -1,5 +1,5 @@
 import torch
-from config import N_INPUT, N_HIDDEN_LAYER, N_HIDDEN, N_OUTPUT, ACTIVATION, B_INIT
+from forward.config import N_INPUT, N_HIDDEN_LAYER, N_HIDDEN, N_OUTPUT, ACTIVATION, B_INIT
 
 
 class Net(torch.nn.Module):

@@ -54,7 +54,7 @@ def train(_model, dataSet):
         train_loss_list.append(train_loss.item())
         valid_loss_list.append(valid_loss.item())
         x_list.append(i)
-        if i % 1000 == 0:
+        if i % 100 == 0:
             print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , valid_loss: {valid_loss.item()}")
 
         if i / 1000 == 5 and len(sys.argv) == 2 and sys.argv[1] == 'test':
