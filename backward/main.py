@@ -61,9 +61,9 @@ def train(_model, dataSet):
             train_loss_list.append(train_loss.item())
             valid_loss_list.append(valid_loss.item())
             x_list.append(i)
-            step_lr.step()
+        step_lr.step()
         if i % 100 == 0:
-            print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , "
+            print(f"EPOCH: {i}, train_loss: {train_loss.item()}, "
                   f"valid_loss: {valid_loss.item()}, LR:{step_lr.get_last_lr()}")
 
         if i / 1000 == 5 and len(sys.argv) == 2 and sys.argv[1] == 'test':

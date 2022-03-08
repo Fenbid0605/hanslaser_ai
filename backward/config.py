@@ -10,7 +10,7 @@ N_OUTPUT = 4
 ACTIVATION = torch.relu
 B_INIT = -0.2  # use a bad bias constant initializer
 EPOCH = 1e4
-LR = 1e-1
+LR = 1e-3
 BATCH_SIZE = 128
 
 EPOCH = int(EPOCH)
