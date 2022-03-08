@@ -34,15 +34,16 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
-    exp_lr = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
+    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=BATCH_SIZE, gamma=0.4)
     x_list = []
     train_loss_list = []
     valid_loss_list = []
 
     # ff  批数据处理
     torch_dataset = Data.TensorDataset(x, y)
-    loader = Data.DataLoader(dataset=torch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-
+    loader = Data.DataLoader(dataset=torch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=8)
+    train_loss = torch.Tensor()
+    valid_loss = torch.Tensor()
     for i in track(range(EPOCH)):
         for step, (b_x, b_y) in enumerate(loader):  # step-批次
             prediction = net(b_x.to(device)).to(device)
@@ -56,14 +57,14 @@ def train(_model, dataSet):
             optimizer.zero_grad()
             train_loss.backward()
             optimizer.step()
-            exp_lr.step()
 
             train_loss_list.append(train_loss.item())
             valid_loss_list.append(valid_loss.item())
             x_list.append(i)
-
+            step_lr.step()
         if i % 100 == 0:
-            print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , valid_loss: {valid_loss.item()}")
+            print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , "
+                  f"valid_loss: {valid_loss.item()}, LR:{step_lr.get_last_lr()}")
 
         if i / 1000 == 5 and len(sys.argv) == 2 and sys.argv[1] == 'test':
             config.save_config(train_loss_list[len(train_loss_list) - 4:], True)  # 记录参数日志
