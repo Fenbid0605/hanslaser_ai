@@ -5,11 +5,12 @@ import openpyxl
 import torch
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
+import torch.utils.data as Data
 
 from dataset import DataSet
 from net import Net
 from rich.progress import track
-from config import LR, EPOCH
+from config import LR, EPOCH, BATCH_SIZE
 import config
 from test import test
 
@@ -23,8 +24,8 @@ def train(_model, dataSet):
     # 打印参数，便于终端看见
     config.print_config()
 
-    x = dataSet.x_matrix.to(device)
-    y = dataSet.y_matrix.to(device)
+    x = dataSet.x_matrix#.to(device)
+    y = dataSet.y_matrix#.to(device)
 
     v_x = dataSet.vx_matrix.to(device)
     v_y = dataSet.vy_matrix.to(device)
@@ -33,27 +34,34 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
-
+    exp_lr = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98)
     x_list = []
     train_loss_list = []
     valid_loss_list = []
 
+    # ff  批数据处理
+    torch_dataset = Data.TensorDataset(x, y)
+    loader = Data.DataLoader(dataset=torch_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+
     for i in track(range(EPOCH)):
-        prediction = net(x).to(device)
-        train_loss = loss_func(prediction, y).to(device)
+        for step, (b_x, b_y) in enumerate(loader):  # step-批次
+            prediction = net(b_x.to(device)).to(device)
+            train_loss = loss_func(prediction, b_y.to(device)).to(device)
 
-        net.eval()
-        prediction = net(v_x).to(device)
-        valid_loss = loss_func(prediction, v_y).to(device)
-        net.train()
+            net.eval()
+            prediction = net(v_x).to(device)
+            valid_loss = loss_func(prediction, v_y).to(device)
+            net.train()
 
-        optimizer.zero_grad()
-        train_loss.backward()
-        optimizer.step()
+            optimizer.zero_grad()
+            train_loss.backward()
+            optimizer.step()
+            exp_lr.step()
 
-        train_loss_list.append(train_loss.item())
-        valid_loss_list.append(valid_loss.item())
-        x_list.append(i)
+            train_loss_list.append(train_loss.item())
+            valid_loss_list.append(valid_loss.item())
+            x_list.append(i)
+
         if i % 100 == 0:
             print(f"EPOCH: {i} ,train_loss: {train_loss.item()} , valid_loss: {valid_loss.item()}")
 
