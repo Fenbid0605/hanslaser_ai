@@ -34,7 +34,7 @@ def train(_model, dataSet):
 
     loss_func = F.mse_loss
     optimizer = torch.optim.SGD(net.parameters(), lr=LR)
-    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=BATCH_SIZE, gamma=0.4)
+    step_lr = torch.optim.lr_scheduler.StepLR(optimizer, step_size=BATCH_SIZE, gamma=0.9)
     x_list = []
     train_loss_list = []
     valid_loss_list = []
