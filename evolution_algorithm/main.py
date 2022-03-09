@@ -17,7 +17,7 @@ I_BOUND = [29, 45]                                       # 电流取值范围
 SPEED_BOUND = [700, 2301]                                # 打标速度取值范围
 Q_F_BOUND = [10, 23]                                     # Q频取值范围
 Q_S_BOUND = [5, 46]                                      # Q释放取值范围
-LAB = torch.Tensor([[81.09, 0.72, -3.37]])                                 # 目标LAB值
+LAB = torch.Tensor([81.09, 0.72, -3.37])                                 # 目标LAB值
 # 29	2300	10	35
 
 class GA(object):
@@ -103,7 +103,7 @@ if __name__ == '__main__':
             count = 0
         res = train_loss.item()
         if count == 20:                  # 重复20次中断循环
-            print("find the result :", best_DNA)
+            print("find the result :", best_DNA, "with LAB: ", ga.F(best_DNA))
             break
 
         ga.evolve()
