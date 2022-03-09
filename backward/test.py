@@ -34,8 +34,8 @@ def test(_model, to_predict, actual, name):
     for row in actual:
         print('Predict')
         predict = predicts[cnt]
-        predict[1] *= 100
-        row[1] *= 100
+        predict[1] *= 1000
+        row[1] *= 1000
         print(predict)
         print('Actual')
         print(row)
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     else:
         dataSet = DataSet()
         print("test model~")
-        dataSet = DataSet()
+
         model = Net()
         model.load_state_dict(torch.load('model.pl', map_location=device))
 

@@ -4,14 +4,14 @@ import datetime
 
 # 通用单个
 N_INPUT = 3
-N_HIDDEN_LAYER = 20
-N_HIDDEN = 128
+N_HIDDEN_LAYER = 40
+N_HIDDEN = 80
 N_OUTPUT = 4
-ACTIVATION = torch.relu
+ACTIVATION = torch.tanh
 B_INIT = -0.2  # use a bad bias constant initializer
 EPOCH = 1e4
-LR = 1e-3
-BATCH_SIZE = 128
+LR = 1e-2
+BATCH_SIZE = 1000
 
 EPOCH = int(EPOCH)
 

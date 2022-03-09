@@ -10,19 +10,19 @@ class DataSet:
         worksheet = workbook.worksheets[0]
         x_matrix = []
         y_matrix = []
-
         # 测试集
-        # worksheet = workbook.worksheets[1]
         vx_matrix = []
         vy_matrix = []
-
         random.seed(10)
-        for row in list(worksheet.rows)[1:]:
+        rows = list(worksheet.rows)[1:]
+        # 打乱数据
+        random.shuffle(rows)
+        for row in rows:
             # 随机生成测试集
             random_number = random.randint(1, 100)
             x = [float(c.value) for c in row[4:7]]
             y = [float(c.value) for c in row[0:4]]
-            y[1] /= 100
+            y[1] /= 1000
             if random_number > 10:
                 x_matrix.append(x)
                 y_matrix.append(y)
