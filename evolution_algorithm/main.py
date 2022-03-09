@@ -2,22 +2,23 @@
 import torch
 import math
 import numpy as np
+import torch.nn.functional as F
 from forward.net import Net
 from forward.dataset import DataSet
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 
 POP_SIZE = DataSet().vx_matrix.shape[0]                  # population size
-CROSS_RATE = 0.6                                         # mating probability (DNA crossover)
-MUTATION_RATE = 0.01                                     # mutation probability
+CROSS_RATE = 0.4                                         # mating probability (DNA crossover)
+MUTATION_RATE = 0.05                                     # mutation probability
 N_GENERATIONS = 1000
 DNA_SIZE = DataSet().vx_matrix.shape[1]
 I_BOUND = [29, 45]                                       # 电流取值范围
 SPEED_BOUND = [700, 2301]                                # 打标速度取值范围
 Q_F_BOUND = [10, 23]                                     # Q频取值范围
 Q_S_BOUND = [5, 46]                                      # Q释放取值范围
-LAB = [67, -0.05, -3.34]                                 # 目标LAB值
-
+LAB = torch.Tensor([[81.09, 0.72, -3.37]])                                 # 目标LAB值
+# 29	2300	10	35
 
 class GA(object):
     def __init__(self, DNA_size, DNA_bound_I, DNA_bound_speed, DNA_bound_qf, DNA_bound_qs, cross_rate, mutation_rate, pop_size, LAB):
@@ -42,7 +43,7 @@ class GA(object):
     def get_fitness(self, preds):                      # count how many character matches
         match_count = []
         for pred in preds:
-            match_count.append(1/math.sqrt(0.8*pow((self.LAB[0]-pred[0]), 2)+0.1*pow((self.LAB[1]-pred[1]), 2)+0.1*pow((self.LAB[2]-pred[2]), 2)))
+             match_count.append(1/F.mse_loss(pred, self.LAB).item())
         return match_count
 
     def select(self):
@@ -86,9 +87,23 @@ if __name__ == '__main__':
             DNA_bound_qf=Q_F_BOUND, DNA_bound_qs=Q_S_BOUND, cross_rate=CROSS_RATE,
             mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, LAB=LAB)
 
+    count = 0
+    res = 0
     for generation in range(N_GENERATIONS):
         fitness = ga.get_fitness(ga.F(ga.pop))
         best_DNA = ga.pop[np.argmax(fitness)].unsqueeze(0)
-        print('Gen', generation, ': ', best_DNA, ' Res:' , ga.F(best_DNA), ' Standare: ', ga.LAB)
+        loss_func = F.mse_loss
+        predictions = ga.F(best_DNA)
+        train_loss = loss_func(predictions, ga.LAB).to(device)
+        print('Gen', generation, ': ', best_DNA, ' loss:' , train_loss.item())
+
+        if res == 0 or res == train_loss.item():
+            count += 1
+        else:
+            count = 0
+        res = train_loss.item()
+        if count == 20:                  # 重复20次中断循环
+            print("find the result :", best_DNA)
+            break
 
         ga.evolve()
