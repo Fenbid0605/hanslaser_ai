@@ -1,42 +1,67 @@
+import dataclasses
+import os
+
 import torch
+import logging
 import numpy as np
 import torch.nn.functional as F
+from torch import Tensor
+
 from forward.net import Net
 from forward.dataset import DataSet
+from pathlib import Path
+from PyQt6.QtCore import QObject, pyqtSignal
 
 device = torch.device("cpu")
 
-POP_SIZE = DataSet().vx_matrix.shape[0]  # population size
+POP_SIZE = DataSet().standby.X.shape[0]  # population size
 CROSS_RATE = 0.4  # mating probability (DNA crossover)
 MUTATION_RATE = 0.05  # mutation probability
 N_GENERATIONS = 1000
-DNA_SIZE = DataSet().vx_matrix.shape[1]
+DNA_SIZE = DataSet().standby.X.shape[1]
 I_BOUND = [29, 45]  # 电流取值范围
 SPEED_BOUND = [700, 2301]  # 打标速度取值范围
 Q_F_BOUND = [10, 23]  # Q频取值范围
 Q_S_BOUND = [5, 46]  # Q释放取值范围
-LAB = torch.Tensor([81.09, 0.72, -3.37])  # 目标LAB值
+
+logger = logging.getLogger('GA')
 
 
-class GA(object):
-    def __init__(self, DNA_size, DNA_bound_I, DNA_bound_speed, DNA_bound_qf, DNA_bound_qs, cross_rate, mutation_rate,
-                 pop_size, LAB):
-        self.DNA_size = DNA_size
-        self.DNA_bound_I = DNA_bound_I
-        self.DNA_bound_speed = DNA_bound_speed
-        self.DNA_bound_qf = DNA_bound_qf
-        self.DNA_bound_qs = DNA_bound_qs
-        self.cross_rate = cross_rate
-        self.mutate_rate = mutation_rate
-        self.pop_size = pop_size
-        self.LAB = LAB
-        self.pop = DataSet().vx_matrix
+@dataclasses.dataclass
+class Predicted:
+    current: int
+    speed: int
+    frequency: int
+    release: int
+    L: float
+    A: float
+    B: float
+
+
+class GA(QObject):
+    progress_changed = pyqtSignal(int)
+
+    def __init__(self):
+        super().__init__()
+        self.LAB = None
+        self.DNA_size = DNA_SIZE
+        self.DNA_bound_I = I_BOUND
+        self.DNA_bound_speed = SPEED_BOUND
+        self.DNA_bound_qf = Q_F_BOUND
+        self.DNA_bound_qs = Q_S_BOUND
+        self.cross_rate = CROSS_RATE
+        self.mutate_rate = MUTATION_RATE
+        self.pop_size = POP_SIZE
+        self.pop = DataSet().standby.X
+
+        self.model = Net()
+        self.model.load_state_dict(
+            torch.load(Path(__file__).parent.parent.joinpath('forward', 'model.pl'),
+                       map_location=device))
+        self.model.eval()
 
     def F(self, x):
-        model = Net()
-        model.load_state_dict(torch.load('../forward/model.pl', map_location=device))
-        model.eval()
-        lab = model(x)
+        lab = self.model(x)
         return lab
 
     def get_fitness(self, preds):  # count how many character matches
@@ -46,9 +71,9 @@ class GA(object):
         return match_count
 
     def select(self):
-        fitness = self.get_fitness(self.F(self.pop))  # add a small amount to avoid all zero fitness
-        fitness = np.array(fitness)
-        idx = np.random.choice(np.arange(self.pop_size), size=self.pop_size, replace=True, p=fitness / fitness.sum())
+        _fitness = self.get_fitness(self.F(self.pop))  # add a small amount to avoid all zero fitness
+        _fitness = np.array(_fitness)
+        idx = np.random.choice(np.arange(self.pop_size), size=self.pop_size, replace=True, p=_fitness / _fitness.sum())
         return self.pop[idx]
 
     def crossover(self, parent, pop):
@@ -80,33 +105,41 @@ class GA(object):
             parent[:] = child
         self.pop = pop
 
+    def predict(self, lab: Tensor) -> Predicted:
+        # 对 L /= 100, B /= 10
+        lab[0] /= 100
+        lab[2] /= 10
+        self.LAB = lab
+        count = 0
+        prev_loss = 0
+        for generation in range(N_GENERATIONS):
+            self.progress_changed.emit(generation * 100 // N_GENERATIONS )
+            fitness = self.get_fitness(self.F(self.pop))
+            best_DNA: Tensor = self.pop[np.argmax(fitness)].unsqueeze(0)
+            loss_func = F.mse_loss
+            predictions = self.F(best_DNA)[0]
+            train_loss = loss_func(predictions, self.LAB).to(device)
+
+            logger.debug("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s", generation, best_DNA[0],
+                         predictions[0].item(), predictions[1].item(), predictions[2].item(), train_loss.item())
+
+            count = count + 1 if prev_loss == 0 or prev_loss == train_loss.item() else 0
+            prev_loss = train_loss.item()
+            if count == 20 or generation == N_GENERATIONS - 1:  # 重复20次中断循环
+                self.progress_changed.emit(100)
+                best_DNA = best_DNA[0]
+                logger.debug("Best result: %s, predict:%s, target: %s", best_DNA, predictions, self.LAB)
+
+                return Predicted(
+                    current=best_DNA[0].item(), speed=best_DNA[1].item(), frequency=best_DNA[2].item(),
+                    release=round(best_DNA[3].item()), L=round(predictions[0].item()*100, 2),
+                    A=round(predictions[1].item(), 2), B=round(predictions[2].item()*10, 2)
+                )
+
+            self.evolve()
+
 
 if __name__ == '__main__':
-    ga = GA(DNA_size=DNA_SIZE, DNA_bound_I=I_BOUND, DNA_bound_speed=SPEED_BOUND,
-            DNA_bound_qf=Q_F_BOUND, DNA_bound_qs=Q_S_BOUND, cross_rate=CROSS_RATE,
-            mutation_rate=MUTATION_RATE, pop_size=POP_SIZE, LAB=LAB)
-
-    count = 0
-    res = 0
-    for generation in range(N_GENERATIONS):
-        fitness = ga.get_fitness(ga.F(ga.pop))
-        best_DNA = ga.pop[np.argmax(fitness)].unsqueeze(0)
-        loss_func = F.mse_loss
-        predictions = ga.F(best_DNA)[0]
-        train_loss = loss_func(predictions, ga.LAB).to(device)
-
-        print("Gen %s: %s" % (generation, best_DNA[0]))
-        print("Predict: %.4f,%.4f,%.4f" % (predictions[0].item(), predictions[1].item(), predictions[2].item()))
-        print("loss: %s" % train_loss.item())
-        print()
-
-        if res == 0 or res == train_loss.item():
-            count += 1
-        else:
-            count = 0
-        res = train_loss.item()
-        if count == 20:  # 重复20次中断循环
-            print("Best result: %s, predict:%s, target: %s" % (best_DNA, predictions, LAB))
-            break
-
-        ga.evolve()
+    target_lab = torch.Tensor(DataSet().standby.Y[100])  # 目标LAB值
+    ga = GA()
+    ga.predict(target_lab)

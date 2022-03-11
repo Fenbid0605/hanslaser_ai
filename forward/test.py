@@ -1,4 +1,3 @@
-import openpyxl
 import torch
 import matplotlib.pyplot as plt
 
@@ -6,7 +5,6 @@ from dataset import DataSet
 from net import Net
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(f'device: {device}')
 
 
 def test(_model, to_predict, actual, name):
@@ -22,11 +20,13 @@ def test(_model, to_predict, actual, name):
     predicts = _model(to_predict).to(device)
     actual = actual.to(device)
     for row in actual:
-        print('Predict')
         predict = predicts[cnt]
-        print(predict)
-        print('Actual')
-        print(row)
+
+        predict[0] *= 100
+        predict[2] *= 10
+
+        row[0] *= 100
+        row[2] *= 10
 
         l_predict_list.append(predict[0].item())
         a_predict_list.append(predict[1].item())
@@ -38,7 +38,6 @@ def test(_model, to_predict, actual, name):
 
         X_list.append(cnt)
         cnt += 1
-        print('=========')
 
     # 绘图
     fig, axs = plt.subplots(1, 3, figsize=(9, 3))
@@ -56,17 +55,26 @@ def test(_model, to_predict, actual, name):
     axs[2].legend()
 
     fig.suptitle('%s-LAB' % name)
-    plt.savefig('./%s-lab.png' % name)
+    plt.savefig('../result/%s-lab.png' % name)
     plt.show()
 
 
-if __name__ == '__main__':
+def Test():
+    # 实例化神经网络
     model = Net()
+    # 导入训练好的模型
     model.load_state_dict(torch.load('model.pl', map_location=device))
-
+    # 冻结，进入预测模式
     model.eval()
     model.to(device)
-
+    # 实例化数据集
     dataSet = DataSet()
-    test(model, dataSet.x_matrix.to(device), dataSet.y_matrix.to(device), 'Train')
-    test(model, dataSet.vx_matrix.to(device), dataSet.vy_matrix.to(device), 'Valid')
+
+    # 测试训练集
+    test(model, dataSet.train.X.to(device), dataSet.train.Y.to(device), 'Train')
+    # 测试验证集
+    test(model, dataSet.valid.X.to(device), dataSet.valid.Y.to(device), 'Valid')
+
+
+if __name__ == '__main__':
+    Test()

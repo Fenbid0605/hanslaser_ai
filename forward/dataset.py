@@ -1,31 +1,62 @@
+import os
+
 import torch
 import openpyxl
 import random
 
 
+class Matrix:
+    def __init__(self):
+        self.x = []
+        self.y = []
+
+    @property
+    def X(self):
+        return torch.Tensor(self.x)
+
+    @property
+    def Y(self):
+        return torch.Tensor(self.y)
+
+
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook('../data/data.xlsx')
-        # 训练集
+        workbook = openpyxl.load_workbook(os.path.dirname(os.path.abspath(__file__)) + '/../data/data.xlsx')
+        # 数据集
         worksheet = workbook.worksheets[0]
-        x_matrix = []
-        y_matrix = []
-        # 测试集
-        # worksheet = workbook.worksheets[1]
-        vx_matrix = []
-        vy_matrix = []
+
+        # 训练集
+        self.train = Matrix()
+        # 验证集
+        self.valid = Matrix()
+        # 备用集
+        self.standby = Matrix()
+
+        # 初始一个随机种子
         random.seed(1003)
-        for row in list(worksheet.rows)[1:]:
+        # 打乱输入
+        rows = list(worksheet.rows)[1:]
+        random.shuffle(rows)
+
+        for row in rows:
             # 随机生成测试集
             random_number = random.randint(1, 100)
-            if random_number > 10:
-                x_matrix.append([float(c.value) for c in row[0:4]])
-                y_matrix.append([float(c.value) for c in row[4:7]])
-            else:
-                vx_matrix.append([float(c.value) for c in row[0:4]])
-                vy_matrix.append([float(c.value) for c in row[4:7]])
+            x = [float(c.value) for c in row[0:4]]
+            # x[1] /= 100
+            y = [float(c.value) for c in row[4:7]]
+            y[0] /= 100
+            y[2] /= 10
 
-        self.x_matrix = torch.Tensor(x_matrix)
-        self.y_matrix = torch.Tensor(y_matrix)
-        self.vx_matrix = torch.Tensor(vx_matrix)
-        self.vy_matrix = torch.Tensor(vy_matrix)
+            if 20 < random_number < 60:
+                self.train.x.append(x)
+                self.train.y.append(y)
+            elif random_number > 60:
+                self.standby.x.append(x)
+                self.standby.y.append(y)
+            else:
+                self.valid.x.append(x)
+                self.valid.y.append(y)
+
+
+if __name__ == '__main__':
+    dataSet = DataSet()
