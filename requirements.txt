@@ -1,6 +1,6 @@
 matplotlib==3.5.1
 openpyxl==3.0.9
-rich==11.0.0
-torch==1.10.1
+rich==12.0.1
+torch==1.11.0
 PyQt6~=6.2.3
-numpy~=1.22.0
+numpy==1.22.3

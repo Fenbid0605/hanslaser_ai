@@ -4,7 +4,7 @@ import sys
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal, QObject, pyqtSlot
 
-from evolution_algorithm.main import GA, Predicted
+from evolution import GA, Predicted
 from mainwindow import Ui_MainWindow
 from torch import Tensor
 
@@ -28,7 +28,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressStatusLabel.setText('正在计算')
         self.outputLabel.clear()
         value = Tensor(
-            [self.LdoubleSpinBox.value(), self.AdoubleSpinBox.value(), self.BdoubleSpinBox.value()])
+            [self.LdoubleSpinBox.value() / 100, self.AdoubleSpinBox.value(), self.BdoubleSpinBox.value() / 10])
         self.worker.predict.emit(value)
 
     @pyqtSlot(Predicted)

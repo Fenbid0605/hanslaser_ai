@@ -80,7 +80,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="AdoubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="AdoubleSpinBox">
+        <property name="minimum">
+         <double>-100.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -176,7 +183,7 @@
       <item>
        <widget class="QLabel" name="progressLabel">
         <property name="text">
-         <string>       </string>
+         <string/>
         </property>
        </widget>
       </item>
