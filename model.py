@@ -10,14 +10,18 @@ from config import Config, ABSPATH
 from net import Net
 
 config = Config()
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class Model:
-    def __init__(self):
+    def __init__(self, device=None):
         self.net = Net()
+        if device is None:
+            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device = device
 
     def train(self, data_set):
+        device = self.device
         x = data_set.train.X
         y = data_set.train.Y
 
@@ -90,8 +94,8 @@ class Model:
         torch.save(self.net.state_dict(), 'model.pl')
 
     def load(self):
-        self.net.load_state_dict(torch.load('model.pl', map_location=device))
+        self.net.load_state_dict(torch.load('model.pl', map_location=self.device))
 
     def eval(self):
         self.net.eval()
-        self.net.to(device)
+        self.net.to(self.device)

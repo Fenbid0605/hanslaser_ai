@@ -5,9 +5,7 @@ import torch.nn.functional as F
 from torch import Tensor
 
 from model import Model
-from net import Net
 from dataset import DataSet
-from pathlib import Path
 from predicted import Predicted
 
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -43,7 +41,7 @@ class GA(QObject):
         self.pop_size = POP_SIZE
         self.pop = DataSet().standby.X
 
-        self.model = Model()
+        self.model = Model(device=device)
         self.model.load()
         self.model.eval()
 

@@ -44,6 +44,9 @@ class Result:
         self.x_list.append(cnt)
         lock.release()
 
+    def get_cnt(self):
+        return len(self.x_list) + 1
+
     def save(self):
         # 绘图
         fig, axs = plt.subplots(1, 3, figsize=(9, 3))

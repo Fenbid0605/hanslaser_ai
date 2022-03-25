@@ -17,10 +17,10 @@ class Config:
     EPOCH = 1e4
     LR = 1e-3
     BATCH_SIZE = 64
-    STEP = 300
-    GAMMA = 0.1
-    DROPOUT = 0.02
-    EVOLUTION_MAX_PROC = 20
+    # STEP = 300
+    # GAMMA = 0.1
+    # DROPOUT = 0.02
+    EVOLUTION_MAX_PROC = 4
 
     def __init__(self):
         self.EPOCH = int(self.EPOCH)
