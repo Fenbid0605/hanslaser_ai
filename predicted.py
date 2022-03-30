@@ -10,3 +10,4 @@ class Predicted:
     L: float = 0
     A: float = 0
     B: float = 0
+    loss: float = 0

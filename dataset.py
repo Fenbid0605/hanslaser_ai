@@ -34,6 +34,8 @@ class DataSet:
         # 备用集 1/5
         self.standby = Matrix()
 
+        self.universal = Matrix()
+
         # 初始一个随机种子
         random.seed(1003)
         # 打乱输入
@@ -46,8 +48,11 @@ class DataSet:
             x = [float(c.value) for c in row[0:4]]
             # x[1] /= 100
             y = [float(c.value) for c in row[4:7]]
-            y[0] /= 100
-            y[2] /= 10
+            # y[0] /= 100
+            # y[2] /= 10
+
+            self.universal.x.append(x)
+            self.universal.y.append(y)
 
             if 20 < random_number < 60:
                 self.train.x.append(x)

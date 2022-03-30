@@ -15,8 +15,6 @@ def test(inputY, __result: Result):
     target_lab = torch.Tensor(inputY)  # 目标LAB值
     ga = GA()
     predict = ga.predict(target_lab)
-    # print('Actual %.2f,%.2f,%.2f\nPredict %s,%s,%s' % (inputY[0].item() * 100, inputY[1].item(),
-    #                                                    inputY[2].item() * 10, predict.L, predict.A, predict.B))
     __result.add_plot(predict, inputY)
 
 

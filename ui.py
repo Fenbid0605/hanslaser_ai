@@ -28,13 +28,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressStatusLabel.setText('正在计算')
         self.outputLabel.clear()
         value = Tensor(
-            [self.LdoubleSpinBox.value() / 100, self.AdoubleSpinBox.value(), self.BdoubleSpinBox.value() / 10])
+            [self.LdoubleSpinBox.value(), self.AdoubleSpinBox.value(), self.BdoubleSpinBox.value()])
         self.worker.predict.emit(value)
 
     @pyqtSlot(Predicted)
     def __on_predicted(self, predicted: Predicted):
         self.outputLabel.setText(f"电流: {predicted.current} 打标速度: {predicted.speed} Q频: {predicted.frequency} "
-                                 f"Q释放: {predicted.release} 预测LAB: {predicted.L}, {predicted.A}, {predicted.B}")
+                                 f"Q释放: {predicted.release} 预测LAB: {predicted.L}, {predicted.A}, {predicted.B}"
+                                 f"\n△E = {round(predicted.loss, 3)}")
         self.progressStatusLabel.setText('计算完成')
 
     def __on_progress_changed(self, i):

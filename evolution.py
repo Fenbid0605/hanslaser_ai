@@ -12,11 +12,11 @@ from PyQt6.QtCore import QObject, pyqtSignal
 
 device = torch.device("cpu")
 
-POP_SIZE = DataSet().standby.X.shape[0]  # population size
-CROSS_RATE = 0.4  # mating probability (DNA crossover)
-MUTATION_RATE = 0.05  # mutation probability
+POP_SIZE = DataSet().universal.X.shape[0]  # population size
+CROSS_RATE = 0.5  # mating probability (DNA crossover)
+MUTATION_RATE = 0.01  # mutation probability
 N_GENERATIONS = 1000
-DNA_SIZE = DataSet().standby.X.shape[1]
+DNA_SIZE = DataSet().universal.X.shape[1]
 I_BOUND = [29, 45]  # 电流取值范围
 SPEED_BOUND = [700, 2301]  # 打标速度取值范围
 Q_F_BOUND = [10, 23]  # Q频取值范围
@@ -39,7 +39,7 @@ class GA(QObject):
         self.cross_rate = CROSS_RATE
         self.mutate_rate = MUTATION_RATE
         self.pop_size = POP_SIZE
-        self.pop = DataSet().standby.X
+        self.pop = DataSet().universal.X
 
         self.model = Model(device=device)
         self.model.load()
@@ -100,7 +100,7 @@ class GA(QObject):
             best_DNA: Tensor = self.pop[np.argmax(fitness)].unsqueeze(0)
             loss_func = F.mse_loss
             predictions = self.F(best_DNA)[0]
-            train_loss = loss_func(predictions, self.LAB).to(device)
+            train_loss = loss_func(predictions, self.LAB, reduction='sum').to(device)
 
             logger.debug("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s", generation, best_DNA[0],
                          predictions[0].item(), predictions[1].item(), predictions[2].item(), train_loss.item())
@@ -114,8 +114,8 @@ class GA(QObject):
 
                 return Predicted(
                     current=best_DNA[0].item(), speed=best_DNA[1].item(), frequency=best_DNA[2].item(),
-                    release=round(best_DNA[3].item()), L=round(predictions[0].item() * 100, 2),
-                    A=round(predictions[1].item(), 2), B=round(predictions[2].item() * 10, 2)
+                    release=round(best_DNA[3].item()), L=round(predictions[0].item(), 2),
+                    A=round(predictions[1].item(), 2), B=round(predictions[2].item(), 2), loss=train_loss.item()
                 )
 
             self.evolve()
