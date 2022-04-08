@@ -20,9 +20,9 @@ def test(_model, to_predict, actual, name):
     for row in actual:
         predict = predicts[cnt]
         cnt += 1
-        result.add_plot(predict=Predicted(L=predict[0].item() * 100,
+        result.add_plot(predict=Predicted(L=predict[0].item(),
                                           A=predict[1].item(),
-                                          B=predict[2].item() * 10),
+                                          B=predict[2].item()),
                         actual=row)
 
     # 绘图

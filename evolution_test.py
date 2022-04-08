@@ -11,27 +11,33 @@ from result import Result
 from share_data import ShareData
 
 
-def test(inputY, __result: Result):
+def test_each(inputY, __result: Result):
     target_lab = torch.Tensor(inputY)  # 目标LAB值
     ga = GA()
     predict = ga.predict(target_lab)
     __result.add_plot(predict, inputY)
 
 
-if __name__ == '__main__':
-    torch.multiprocessing.set_start_method('forkserver', force=True)
+def test(name, dataSetY: torch.Tensor):
     config = Config()
-    # 多线程执行
     with Manager() as manager:
         share = ShareData(manager)
         pool = Pool(config.EVOLUTION_MAX_PROC)
-        result = Result(name='evolution', share=share)
+        result = Result(name=name, share=share)
         with Progress() as progress:
-            task = progress.add_task('Evolution', total=DataSet().standby.Y.shape[0])
+            task = progress.add_task(name, total=dataSetY.shape[0])
 
             for y in DataSet().standby.Y:
-                pool.apply_async(test, args=(y, result,), callback=lambda x: progress.advance(task))
+                pool.apply_async(test_each, args=(y, result,), callback=lambda x: progress.advance(task))
             pool.close()
             pool.join()
 
         result.save()
+
+
+if __name__ == '__main__':
+    torch.multiprocessing.set_start_method('forkserver', force=True)
+    dataset = DataSet()
+    test('evolution-standby', dataset.standby.Y)
+    test('evolution-train', dataset.train.Y)
+    test('evolution-valid', dataset.valid.Y)
