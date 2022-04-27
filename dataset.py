@@ -11,6 +11,7 @@ class Matrix:
     def __init__(self):
         self.x = []
         self.y = []
+        self.rows = []
 
     @property
     def X(self):
@@ -23,7 +24,7 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data-1.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
 
@@ -48,8 +49,10 @@ class DataSet:
             x = [float(c.value) for c in row[0:4]]
             # x[1] /= 100
             y = [float(c.value) for c in row[4:7]]
-            # y[0] /= 100
-            # y[2] /= 10
+            self.universal.rows.append(row[0:7])
+            # 排除边缘数据
+            if y[0] > 90 or y[0] < 57:
+                continue
 
             self.universal.x.append(x)
             self.universal.y.append(y)
@@ -57,7 +60,7 @@ class DataSet:
             if 20 < random_number < 60:
                 self.train.x.append(x)
                 self.train.y.append(y)
-            elif random_number > 80:
+            elif random_number > 90:
                 self.standby.x.append(x)
                 self.standby.y.append(y)
             else:

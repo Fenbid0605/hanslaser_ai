@@ -27,17 +27,19 @@ def test(name, dataSetY: torch.Tensor):
         with Progress() as progress:
             task = progress.add_task(name, total=dataSetY.shape[0])
 
-            for y in DataSet().standby.Y:
+            for y in dataSetY:
                 pool.apply_async(test_each, args=(y, result,), callback=lambda x: progress.advance(task))
             pool.close()
             pool.join()
 
         result.save()
+        result.save_excel()
 
 
 if __name__ == '__main__':
     torch.multiprocessing.set_start_method('forkserver', force=True)
     dataset = DataSet()
-    test('evolution-standby', dataset.standby.Y)
-    test('evolution-train', dataset.train.Y)
-    test('evolution-valid', dataset.valid.Y)
+    test('evolution-universal', dataset.universal.Y)
+    # test('evolution-standby', dataset.standby.Y)
+    # test('evolution-train', dataset.train.Y)
+    # test('evolution-valid', dataset.valid.Y)

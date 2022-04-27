@@ -7,3 +7,4 @@ class ShareData:
         self.a_actual_list = _manager.list()
         self.b_actual_list = _manager.list()
         self.x_list = _manager.list()
+        self.predicts = _manager.list()

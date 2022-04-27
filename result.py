@@ -1,6 +1,8 @@
 import os.path
 from multiprocessing import Lock
 
+import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 
 import config
@@ -21,6 +23,7 @@ class Result:
         self.b_actual_list = []
         self.x_list = []
         self.cnt = 0
+        self.predicts = []
         if share:
             self.l_predict_list = share.l_predict_list
             self.a_predict_list = share.a_predict_list
@@ -29,6 +32,7 @@ class Result:
             self.a_actual_list = share.a_actual_list
             self.b_actual_list = share.b_actual_list
             self.x_list = share.x_list
+            self.predicts = share.predicts
 
     def add_plot(self, predict: Predicted, actual):
         lock.acquire()
@@ -42,6 +46,13 @@ class Result:
 
         cnt = len(self.x_list) + 1
         self.x_list.append(cnt)
+
+        self.predicts.append([
+            predict.speed, predict.current, predict.frequency, predict.release, predict.loss,
+            predict.L, predict.A, predict.B,
+            actual[0], actual[1], actual[2]
+        ])
+
         lock.release()
 
     def get_cnt(self):
@@ -73,3 +84,11 @@ class Result:
         self.__save_figure(self.name, True)
         # 仅实际
         self.__save_figure(self.name + '-actual', False)
+
+    def save_excel(self):
+        frame = pd.DataFrame(np.array(self.predicts),
+                             index=self.x_list,
+                             columns=['速度', '电流', 'Q频', 'Q释放', 'Loss',
+                                      '预测 L', 'A', 'B', '目标 L', 'A', 'B'])
+        print(frame)
+        frame.to_excel(self.name + '.xlsx')
