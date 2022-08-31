@@ -24,7 +24,7 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data-1.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'random_data_1.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
 
@@ -57,7 +57,7 @@ class DataSet:
             self.universal.x.append(x)
             self.universal.y.append(y)
 
-            if 20 < random_number < 60:
+            if 10 < random_number < 80:
                 self.train.x.append(x)
                 self.train.y.append(y)
             elif random_number > 90:

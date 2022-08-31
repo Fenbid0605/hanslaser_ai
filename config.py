@@ -15,11 +15,11 @@ class Config:
     ACTIVATION = torch.tanh
     B_INIT = -0.2  # use a bad bias constant initializer
     EPOCH = 1e4
-    LR = 1e-2
+    LR = 1e-1
     BATCH_SIZE = 128
-    STEP = 1000
+    STEP = 200
     GAMMA = 0.1
-    DROPOUT = 0.5
+    DROPOUT = 0.2
     EVOLUTION_MAX_PROC = 4
 
     def __init__(self):
