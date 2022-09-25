@@ -1,8 +1,8 @@
-matplotlib==3.5.1
-openpyxl==3.0.9
-rich==12.3.0
-torch==1.11.0
-PyQt6==6.3.0
-numpy==1.22.3
-pandas==1.4.2
-Flask~=2.1.2
+matplotlib
+openpyxl
+rich
+torch
+PyQt6
+numpy
+pandas
+Flask

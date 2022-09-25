@@ -9,12 +9,12 @@ ABSPATH = os.path.split(os.path.realpath(__file__))[0]
 class Config:
     # Hyper parameters
     N_INPUT = 4
-    N_HIDDEN_LAYER = 16
-    N_HIDDEN = 82
+    N_HIDDEN_LAYER = 8
+    N_HIDDEN = 64
     N_OUTPUT = 3
     ACTIVATION = torch.tanh
     B_INIT = -0.2  # use a bad bias constant initializer
-    EPOCH = 1e4
+    EPOCH = 1e3
     LR = 1e-1
     BATCH_SIZE = 128
     STEP = 50
@@ -26,7 +26,7 @@ class Config:
         self.EPOCH = int(self.EPOCH)
 
     def save(self, train_loss, valid_loss):
-        with open(os.path.join(ABSPATH, 'result/config_log.txt'), 'a+') as f:
+        with open(os.path.join(ABSPATH, 'result', 'config_log.txt'), 'a+') as f:
             f.write(f'Time: {datetime.datetime.now()} \n')
             f.write(f"N_HIDDEN_LAYER: {self.N_HIDDEN_LAYER} \n")
             f.write(f"N_HIDDEN: {self.N_HIDDEN} \n")

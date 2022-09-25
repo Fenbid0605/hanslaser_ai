@@ -24,7 +24,7 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'random_data_1.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20220923.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
 
@@ -46,10 +46,10 @@ class DataSet:
         for row in rows:
             # 随机生成测试集
             random_number = random.randint(1, 100)
-            x = [float(c.value) for c in row[0:4]]
+            x = [float(c.value) for c in row[1:5]]
             # x[1] /= 100
-            y = [float(c.value) for c in row[4:7]]
-            self.universal.rows.append(row[0:7])
+            y = [float(c.value) for c in row[5:8]]
+            self.universal.rows.append(row[1:8])
             # 排除边缘数据
             if y[0] > 90 or y[0] < 57:
                 continue
