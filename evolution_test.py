@@ -1,14 +1,38 @@
-import logging
+import platform
+
+import openpyxl
+import os
 
 import torch
 from rich.progress import Progress
 
-from config import Config
+import config
 from dataset import DataSet
 from multiprocessing import Pool, Manager
 from evolution import GA
 from result import Result
 from share_data import ShareData
+import random
+
+
+def gen_data():
+    random.seed(1003)
+    y = []
+    for _ in range(243):
+        y.append([random.uniform(68.0, 90.0), random.uniform(-1, 0), random.uniform(-1, 1)])
+
+    return torch.Tensor(y)
+
+
+def use_excel_data():
+    workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data_test.xlsx'))
+    # 数据集
+    worksheet = workbook.worksheets[0]
+    rows = list(worksheet.rows)[1:]
+    y = []
+    for row in rows:
+        y.append([row[1].value, row[2].value, row[3].value])
+    return torch.Tensor(y)
 
 
 def test_each(inputY, __result: Result):
@@ -19,10 +43,10 @@ def test_each(inputY, __result: Result):
 
 
 def test(name, dataSetY: torch.Tensor):
-    config = Config()
+    c = config.Config()
     with Manager() as manager:
         share = ShareData(manager)
-        pool = Pool(config.EVOLUTION_MAX_PROC)
+        pool = Pool(c.EVOLUTION_MAX_PROC)
         result = Result(name=name, share=share)
         with Progress() as progress:
             task = progress.add_task(name, total=dataSetY.shape[0])
@@ -37,9 +61,13 @@ def test(name, dataSetY: torch.Tensor):
 
 
 if __name__ == '__main__':
-    torch.multiprocessing.set_start_method('forkserver', force=True)
+
+    if platform.system().lower() != 'windows':
+        torch.multiprocessing.set_start_method('forkserver', force=True)
     dataset = DataSet()
-    test('evolution-universal', dataset.universal.Y)
+    # test('evolution-random', gen_data())
+    test('evolution-excel', use_excel_data())
+    # test('evolution-universal', dataset.universal.Y)
     # test('evolution-standby', dataset.standby.Y)
     # test('evolution-train', dataset.train.Y)
     # test('evolution-valid', dataset.valid.Y)

@@ -39,8 +39,8 @@ class DataSet:
 
         # 初始一个随机种子
         random.seed(1003)
-        # 打乱输入
         rows = list(worksheet.rows)[1:]
+        # 打乱输入
         random.shuffle(rows)
 
         for row in rows:

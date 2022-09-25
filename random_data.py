@@ -8,8 +8,6 @@ from dataset import DataSet
 if __name__ == '__main__':
     dataset = DataSet()
     rows = dataset.universal.rows
-    # L 排序
-    rows.sort(key=lambda x: float(x[4].value))
 
     random.seed(1003)
 
