@@ -59,7 +59,3 @@ python3 evolution_test.py
 ```
 python3 ui.py
 ```
-
-## TODO
-
-- [ ] 打包 GUI
