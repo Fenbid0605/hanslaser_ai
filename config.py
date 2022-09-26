@@ -16,8 +16,8 @@ class Config:
     B_INIT = -0.2  # use a bad bias constant initializer
     EPOCH = 1e3
     LR = 1e-1
-    BATCH_SIZE = 128
-    STEP = 50
+    BATCH_SIZE = 64
+    STEP = 200
     GAMMA = 0.1
     DROPOUT = 0.2
     EVOLUTION_MAX_PROC = 10
