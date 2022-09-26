@@ -9,18 +9,18 @@ ABSPATH = os.path.split(os.path.realpath(__file__))[0]
 class Config:
     # Hyper parameters
     N_INPUT = 4
-    N_HIDDEN_LAYER = 8
-    N_HIDDEN = 64
+    N_HIDDEN_LAYER = 2
+    N_HIDDEN = 192
     N_OUTPUT = 3
     ACTIVATION = torch.tanh
     B_INIT = -0.2  # use a bad bias constant initializer
-    EPOCH = 1e3
+    EPOCH = 1e4
     LR = 1e-1
-    BATCH_SIZE = 64
-    STEP = 200
-    GAMMA = 0.1
-    DROPOUT = 0.2
-    EVOLUTION_MAX_PROC = 10
+    BATCH_SIZE = 128
+    STEP = 100
+    GAMMA = 0.5
+    DROPOUT = 0.1
+    EVOLUTION_MAX_PROC = 12
 
     def __init__(self):
         self.EPOCH = int(self.EPOCH)
