@@ -79,7 +79,7 @@ class Model:
             print(f"EPOCH: {i}, train_loss: {train_loss.item()}, "
                   f"valid_loss: {valid_loss.item()}, LR:{step_lr.get_last_lr()[0]}")
             # 提前终止
-            if valid_loss.item() < 0.5:
+            if valid_loss.item() < 0.2:
                 break
 
         # 绘制 Loss 曲线
