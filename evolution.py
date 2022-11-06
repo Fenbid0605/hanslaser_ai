@@ -17,10 +17,10 @@ CROSS_RATE = 0.5  # mating probability (DNA crossover)
 MUTATION_RATE = 0.01  # mutation probability
 N_GENERATIONS = 1000
 DNA_SIZE = DataSet().universal.X.shape[1]
-I_BOUND = [29, 45]  # 电流取值范围
-SPEED_BOUND = [700, 2301]  # 打标速度取值范围
-Q_F_BOUND = [10, 23]  # Q频取值范围
-Q_S_BOUND = [5, 46]  # Q释放取值范围
+I_BOUND = [28, 34]  # 电流取值范围
+SPEED_BOUND = [4, 30]  # 打标速度取值范围
+Q_F_BOUND = [34, 50]  # Q频取值范围
+Q_S_BOUND = [2, 4]  # Q释放取值范围
 
 logger = logging.getLogger('GA')
 
@@ -72,11 +72,11 @@ class GA(QObject):
         for point in range(self.DNA_size):
             if np.random.rand() < self.mutate_rate:
                 if point == 0:
-                    child[point] = np.random.randint(*self.DNA_bound_I)
+                    child[point] = np.random.randint(*self.DNA_bound_qf)
                 elif point == 1:
                     child[point] = np.random.randint(*self.DNA_bound_speed)
                 elif point == 2:
-                    child[point] = np.random.randint(*self.DNA_bound_qf)
+                    child[point] = np.random.randint(*self.DNA_bound_I)
                 else:
                     child[point] = np.random.randint(*self.DNA_bound_qs)
         return child
@@ -102,8 +102,10 @@ class GA(QObject):
             predictions = self.F(best_DNA)[0]
             train_loss = loss_func(predictions, self.LAB, reduction='sum').to(device)
 
-            logger.debug("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s", generation, best_DNA[0],
-                         predictions[0].item(), predictions[1].item(), predictions[2].item(), train_loss.item())
+            logger.debug("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s" % (generation, best_DNA[0],
+                                                                              predictions[0].item(),
+                                                                              predictions[1].item(),
+                                                                              predictions[2].item(), train_loss.item()))
 
             count = count + 1 if prev_loss == 0 or prev_loss == train_loss.item() else 0
             prev_loss = train_loss.item()
@@ -113,8 +115,8 @@ class GA(QObject):
                 logger.debug("Best result: %s, predict:%s, target: %s", best_DNA, predictions, self.LAB)
 
                 return Predicted(
-                    current=best_DNA[0].item(), speed=best_DNA[1].item(), frequency=best_DNA[2].item(),
-                    release=round(best_DNA[3].item()), L=round(predictions[0].item(), 2),
+                    frequency=best_DNA[0].item(), speed=best_DNA[1].item() * 100, current=best_DNA[2].item(),
+                    release=best_DNA[3].item(), L=round(predictions[0].item(), 2),
                     A=round(predictions[1].item(), 2), B=round(predictions[2].item(), 2), loss=train_loss.item()
                 )
 

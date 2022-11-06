@@ -9,7 +9,8 @@ import argparse
 
 config = Config()
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device('cpu')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--carry", help="carry model", type=bool, default=False)
@@ -22,7 +23,7 @@ if __name__ == '__main__':
     dataSet = DataSet()
 
     # 初始化网络
-    model = Model()
+    model = Model(device)
 
     if args.carry:
         print('carry model')

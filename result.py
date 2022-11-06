@@ -48,7 +48,7 @@ class Result:
         self.x_list.append(cnt)
 
         self.predicts.append([
-            predict.speed, predict.current, predict.frequency, predict.release, predict.loss,
+            predict.frequency, predict.speed, predict.current, predict.release, predict.loss,
             predict.L, predict.A, predict.B,
             actual[0], actual[1], actual[2]
         ])
@@ -88,7 +88,7 @@ class Result:
     def save_excel(self):
         frame = pd.DataFrame(np.array(self.predicts),
                              index=self.x_list,
-                             columns=['速度', '电流', 'Q频', 'Q释放', 'Loss',
+                             columns=['频率', '速度', '电流', '填充间距', 'Loss',
                                       '预测 L', 'A', 'B', '目标 L', 'A', 'B'])
         print(frame)
         frame.to_excel(self.name + '.xlsx')

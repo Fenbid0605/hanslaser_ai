@@ -19,7 +19,7 @@ def gen_data():
     random.seed(1003)
     y = []
     for _ in range(243):
-        y.append([random.uniform(68.0, 90.0), random.uniform(-1, 0), random.uniform(-1, 1)])
+        y.append([random.uniform(68.0, 85.0), random.uniform(-1, 1), random.uniform(-7, -2.4)])
 
     return torch.Tensor(y)
 
@@ -65,9 +65,9 @@ if __name__ == '__main__':
     if platform.system().lower() != 'windows':
         torch.multiprocessing.set_start_method('forkserver', force=True)
     dataset = DataSet()
-    # test('evolution-random', gen_data())
+    test('evolution-random', gen_data())
     # test('evolution-excel', use_excel_data())
-    test('evolution-universal', dataset.universal.Y)
-    # test('evolution-standby', dataset.standby.Y)
+    # test('evolution-universal', dataset.universal.Y)
+    test('evolution-standby', dataset.standby.Y)
     # test('evolution-train', dataset.train.Y)
     # test('evolution-valid', dataset.valid.Y)

@@ -24,10 +24,9 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20220923.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20221019.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
-
         # 训练集 2/5
         self.train = Matrix()
         # 验证集 2/5
@@ -44,14 +43,21 @@ class DataSet:
         random.shuffle(rows)
 
         for row in rows:
+            if row[0].value is None:
+                continue
             # 随机生成测试集
             random_number = random.randint(1, 100)
-            x = [float(c.value) for c in row[1:5]]
-            # x[1] /= 100
+            # 频率,速度,电流
+            x = [int(c.value) for c in row[1:4]]
+            # 电流 /= 100
+            x[1] /= 100
+            # 填充间距*100
+            x.append(int(row[4].value * 100))
+
             y = [float(c.value) for c in row[5:8]]
             self.universal.rows.append(row[1:8])
             # 排除边缘数据
-            if y[0] > 90 or y[0] < 57:
+            if y[0] > 85 or y[0] < 68:
                 continue
 
             self.universal.x.append(x)
@@ -70,3 +76,4 @@ class DataSet:
 
 if __name__ == '__main__':
     dataSet = DataSet()
+    print(dataSet.train.x)

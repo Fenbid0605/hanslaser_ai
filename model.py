@@ -32,7 +32,7 @@ class Model:
         # ff  批数据处理
         torch_dataset = Data.TensorDataset(x, y)
         loader = Data.DataLoader(dataset=torch_dataset, batch_size=config.BATCH_SIZE, shuffle=True,
-                                 num_workers=4, pin_memory=False)
+                                 num_workers=4)
 
         net = self.net.to(device)
 
@@ -79,7 +79,7 @@ class Model:
             print(f"EPOCH: {i}, train_loss: {train_loss.item()}, "
                   f"valid_loss: {valid_loss.item()}, LR:{step_lr.get_last_lr()[0]}")
             # 提前终止
-            if valid_loss.item() < 0.1:
+            if valid_loss.item() < 0.22:
                 break
 
         # 绘制 Loss 曲线
