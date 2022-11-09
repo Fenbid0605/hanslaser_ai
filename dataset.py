@@ -24,7 +24,7 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20221019.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20221109.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
         # 训练集 2/5
