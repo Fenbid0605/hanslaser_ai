@@ -48,7 +48,8 @@ class Result:
         self.x_list.append(cnt)
 
         self.predicts.append([
-            predict.speed, predict.current, predict.frequency, predict.release, predict.loss,
+            predict.frequency, predict.speed, predict.current, predict.gap,
+            predict.loss,
             predict.L, predict.A, predict.B,
             actual[0], actual[1], actual[2]
         ])
@@ -60,16 +61,17 @@ class Result:
 
     def __save_figure(self, name, flag):
         # 绘图
-        fig, axs = plt.subplots(1, 3, figsize=(9, 3))
+        fig, axs = plt.subplots(1, 3, figsize=(12, 4))
 
-        axs[0].plot(self.x_list, self.l_actual_list, label='L_actual')
-        axs[1].plot(self.x_list, self.a_actual_list, label='A_actual')
-        axs[2].plot(self.x_list, self.b_actual_list, label='B_actual')
+        axs[0].set_ylim(60, 85)
+        axs[0].bar(self.x_list, self.l_actual_list, label='L_actual', alpha=0.8)
+        axs[1].bar(self.x_list, self.a_actual_list, label='A_actual', alpha=0.8)
+        axs[2].bar(self.x_list, self.b_actual_list, label='B_actual', alpha=0.8)
 
         if flag:
-            axs[1].plot(self.x_list, self.a_predict_list, label='A_predict')
-            axs[0].plot(self.x_list, self.l_predict_list, label='L_predict')
-            axs[2].plot(self.x_list, self.b_predict_list, label='B_predict')
+            axs[1].bar(self.x_list, self.a_predict_list, label='A_predict', alpha=0.8)
+            axs[0].bar(self.x_list, self.l_predict_list, label='L_predict', alpha=0.8)
+            axs[2].bar(self.x_list, self.b_predict_list, label='B_predict', alpha=0.8)
 
         axs[0].legend()
         axs[1].legend()
@@ -83,12 +85,12 @@ class Result:
         # 预测和实际重叠
         self.__save_figure(self.name, True)
         # 仅实际
-        self.__save_figure(self.name + '-actual', False)
+        # self.__save_figure(self.name + '-actual', False)
 
     def save_excel(self):
         frame = pd.DataFrame(np.array(self.predicts),
                              index=self.x_list,
-                             columns=['速度', '电流', 'Q频', 'Q释放', 'Loss',
+                             columns=['频率', '速度', '电流', '填充间距', 'Loss',
                                       '预测 L', 'A', 'B', '目标 L', 'A', 'B'])
         print(frame)
-        frame.to_excel(self.name + '.xlsx')
+        frame.to_excel(os.path.join(config.ABSPATH, 'result/%s-lab' % self.name + '.xlsx'))

@@ -10,16 +10,16 @@ class Config:
     # Hyper parameters
     N_INPUT = 4
     N_HIDDEN_LAYER = 2
-    N_HIDDEN = 192
+    N_HIDDEN = 96
     N_OUTPUT = 3
     ACTIVATION = torch.tanh
     B_INIT = -0.2  # use a bad bias constant initializer
-    EPOCH = 1e4
+    EPOCH = 2e3
     LR = 1e-1
-    BATCH_SIZE = 128
-    STEP = 100
-    GAMMA = 0.5
-    DROPOUT = 0.1
+    BATCH_SIZE = 127
+    STEP = 500
+    GAMMA = 0.1
+    DROPOUT = 0.5
     EVOLUTION_MAX_PROC = 12
 
     def __init__(self):

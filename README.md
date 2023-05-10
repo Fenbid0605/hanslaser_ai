@@ -59,3 +59,11 @@ python3 evolution_test.py
 ```
 python3 ui.py
 ```
+
+# TODO
+
+- [ ] 优化文件目录结构
+- [-] 鼠标指针获取
+- [ ] 主从设计
+- [ ] 拍照识别数据
+- [ ] 推导

@@ -4,7 +4,7 @@ import sys
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal, QObject, pyqtSlot
 
-from evolution import GA, Predicted
+from ai.genetic import GA, Predicted
 from mainwindow import Ui_MainWindow
 from torch import Tensor
 

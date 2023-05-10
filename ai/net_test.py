@@ -24,7 +24,7 @@ def test(_model, to_predict, actual, name):
             speed=to_predict[cnt][0].item(),
             current=to_predict[cnt][1].item(),
             frequency=to_predict[cnt][2].item(),
-            release=to_predict[cnt][3].item(),
+            gap=to_predict[cnt][3].item(),
             loss=loss.item(),
             L=predict[0].item(),
             A=predict[1].item(),
@@ -53,7 +53,7 @@ def Test():
     # 测试验证集
     test(model.net, dataSet.valid.X.to(device), dataSet.valid.Y.to(device), 'Valid')
     test(model.net, dataSet.standby.X.to(device), dataSet.standby.Y.to(device), 'Standby')
-    test(model.net, dataSet.universal.X.to(device), dataSet.universal.Y.to(device), 'Universal')
+    # test(model.net, dataSet.universal.X.to(device), dataSet.universal.Y.to(device), 'Universal')
 
 
 if __name__ == '__main__':

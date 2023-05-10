@@ -1,14 +1,14 @@
 import os
-import time
 
 import torch
 import torch.utils.data as Data  # ff
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
 from rich.progress import track
-
+from dataset import CustomDataset
 from config import Config, ABSPATH
 from net import Net
+from torchmetrics.functional import mean_absolute_percentage_error
 
 config = Config()
 
@@ -26,13 +26,18 @@ class Model:
         x = data_set.train.X
         y = data_set.train.Y
 
+        # dataset = CustomDataset(x, y, augmentations=500, noise_std=0.1)
+        #
+        # x, y = dataset.x, dataset.y
+        print(x.shape, y.shape)
+
         v_x = data_set.valid.X.to(device)
         v_y = data_set.valid.Y.to(device)
 
         # ff  批数据处理
-        torch_dataset = Data.TensorDataset(x, y)
-        loader = Data.DataLoader(dataset=torch_dataset, batch_size=config.BATCH_SIZE, shuffle=True,
-                                 num_workers=4, pin_memory=False)
+        # torch_dataset = Data.TensorDataset(x, y)
+        # loader = Data.DataLoader(dataset=torch_dataset, batch_size=config.BATCH_SIZE, shuffle=True,
+        #                          num_workers=4, pin_memory=False)
 
         net = self.net.to(device)
 
@@ -50,23 +55,31 @@ class Model:
         train_loss_list = []
         valid_loss_list = []
 
+        valid_loss_value = 1e10
         for i in track(range(config.EPOCH)):
+            # 提前终止
+            if valid_loss_value < 0.30:
+                continue
             # step-批次
-            for step, (b_x, b_y) in enumerate(loader):
-                prediction = net(b_x.to(device)).to(device)
-                train_loss = loss_func(prediction, b_y.to(device)).to(device)
+            # for step, (b_x, b_y) in enumerate(loader):
+            prediction = net(x.to(device)).to(device)
+            train_loss = loss_func(prediction, y.to(device)).to(device)
 
-                optimizer.zero_grad()
-                train_loss.backward()
-                optimizer.step()
+            optimizer.zero_grad()
+            train_loss.backward()
+            optimizer.step()
 
             net.eval()
             prediction = net(x.to(device)).to(device)
             train_loss = loss_func(prediction, y.to(device)).to(device)
 
+            train_mape = mean_absolute_percentage_error(prediction, y.to(device))
+
             prediction = net(v_x).to(device)
             valid_loss = loss_func(prediction, v_y).to(device)
             net.train()
+
+            valid_mape = mean_absolute_percentage_error(prediction, v_y.to(device))
 
             train_loss_list.append(train_loss.item())
             valid_loss_list.append(valid_loss.item())
@@ -76,11 +89,10 @@ class Model:
                 step_lr.step()
 
             # if i % 10 == 0:
-            print(f"EPOCH: {i}, train_loss: {train_loss.item()}, "
+            print(f"EPOCH: {i}, train_loss: {train_loss.item()}, train_mape: {train_mape}, valid_mape: {valid_mape} "
                   f"valid_loss: {valid_loss.item()}, LR:{step_lr.get_last_lr()[0]}")
-            # 提前终止
-            if valid_loss.item() < 0.1:
-                break
+
+            valid_loss_value = valid_loss.item()
 
         # 绘制 Loss 曲线
         fig, ax = plt.subplots()
@@ -97,10 +109,10 @@ class Model:
         config.save(train_loss_list, valid_loss_list)
 
     def save(self):
-        torch.save(self.net.state_dict(), 'model.pl')
+        torch.save(self.net.state_dict(), os.path.join(ABSPATH, 'model.pl'))
 
     def load(self):
-        self.net.load_state_dict(torch.load('model.pl', map_location=self.device))
+        self.net.load_state_dict(torch.load(os.path.join(ABSPATH, 'model.pl'), map_location=self.device))
 
     def eval(self):
         self.net.eval()

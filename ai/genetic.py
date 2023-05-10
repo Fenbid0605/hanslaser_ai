@@ -7,39 +7,38 @@ from torch import Tensor
 from model import Model
 from dataset import DataSet
 from predicted import Predicted
-
-from PyQt6.QtCore import QObject, pyqtSignal
+from helper.log import log
 
 device = torch.device("cpu")
 
-POP_SIZE = DataSet().universal.X.shape[0]  # population size
+data = DataSet()
+
+POP_SIZE = data.valid.X.shape[0]  # population size
 CROSS_RATE = 0.5  # mating probability (DNA crossover)
 MUTATION_RATE = 0.01  # mutation probability
 N_GENERATIONS = 1000
-DNA_SIZE = DataSet().universal.X.shape[1]
-I_BOUND = [29, 45]  # 电流取值范围
-SPEED_BOUND = [700, 2301]  # 打标速度取值范围
-Q_F_BOUND = [10, 23]  # Q频取值范围
-Q_S_BOUND = [5, 46]  # Q释放取值范围
+DNA_SIZE = data.valid.X.shape[1]
+FREQ_BOUND = [10, 50]  # 频率取值范围
+SPEED_BOUND = [5, 37]  # 打标速度取值范围 * 100
+I_BOUND = [28, 34]  # 电流取值范围
+GAP_BOUND = [2, 4]  # 填充间距取值范围 / 100
 
-logger = logging.getLogger('GA')
+logger = log
 
 
-class GA(QObject):
-    progress_changed = pyqtSignal(int)
-
+class GA:
     def __init__(self):
         super().__init__()
         self.LAB = None
         self.DNA_size = DNA_SIZE
         self.DNA_bound_I = I_BOUND
         self.DNA_bound_speed = SPEED_BOUND
-        self.DNA_bound_qf = Q_F_BOUND
-        self.DNA_bound_qs = Q_S_BOUND
+        self.DNA_bound_freq = FREQ_BOUND
+        self.DNA_bound_gap = GAP_BOUND
         self.cross_rate = CROSS_RATE
         self.mutate_rate = MUTATION_RATE
         self.pop_size = POP_SIZE
-        self.pop = DataSet().universal.X
+        self.pop = data.valid.X
 
         self.model = Model(device=device)
         self.model.load()
@@ -72,13 +71,13 @@ class GA(QObject):
         for point in range(self.DNA_size):
             if np.random.rand() < self.mutate_rate:
                 if point == 0:
-                    child[point] = np.random.randint(*self.DNA_bound_I)
+                    child[point] = np.random.randint(*self.DNA_bound_freq)
                 elif point == 1:
                     child[point] = np.random.randint(*self.DNA_bound_speed)
                 elif point == 2:
-                    child[point] = np.random.randint(*self.DNA_bound_qf)
+                    child[point] = np.random.randint(*self.DNA_bound_I)
                 else:
-                    child[point] = np.random.randint(*self.DNA_bound_qs)
+                    child[point] = np.random.randint(*self.DNA_bound_gap)
         return child
 
     def evolve(self):
@@ -95,26 +94,26 @@ class GA(QObject):
         count = 0
         prev_loss = 0
         for generation in range(N_GENERATIONS):
-            self.progress_changed.emit(generation * 100 // N_GENERATIONS)
             fitness = self.get_fitness(self.F(self.pop))
             best_DNA: Tensor = self.pop[np.argmax(fitness)].unsqueeze(0)
             loss_func = F.mse_loss
             predictions = self.F(best_DNA)[0]
             train_loss = loss_func(predictions, self.LAB, reduction='sum').to(device)
 
-            logger.debug("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s", generation, best_DNA[0],
-                         predictions[0].item(), predictions[1].item(), predictions[2].item(), train_loss.item())
+            # logger.info("Gen %s: %s. Predict: %.4f, %.4f, %.4f. Loss: %s" % (generation, best_DNA[0],
+            #                                                                  predictions[0].item(),
+            #                                                                  predictions[1].item(),
+            #                                                                  predictions[2].item(), train_loss.item()))
 
             count = count + 1 if prev_loss == 0 or prev_loss == train_loss.item() else 0
             prev_loss = train_loss.item()
             if count == 20 or generation == N_GENERATIONS - 1:  # 重复20次中断循环
-                self.progress_changed.emit(100)
                 best_DNA = best_DNA[0]
-                logger.debug("Best result: %s, predict:%s, target: %s", best_DNA, predictions, self.LAB)
+                # logger.info("Best result: %s, predict:%s, target: %s", best_DNA, predictions, self.LAB)
 
                 return Predicted(
-                    current=best_DNA[0].item(), speed=best_DNA[1].item(), frequency=best_DNA[2].item(),
-                    release=round(best_DNA[3].item()), L=round(predictions[0].item(), 2),
+                    frequency=best_DNA[0].item(), speed=best_DNA[1].item() * 100, current=best_DNA[2].item(),
+                    gap=best_DNA[3].item() / 100, L=round(predictions[0].item(), 2),
                     A=round(predictions[1].item(), 2), B=round(predictions[2].item(), 2), loss=train_loss.item()
                 )
 

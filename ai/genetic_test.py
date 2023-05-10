@@ -9,10 +9,12 @@ from rich.progress import Progress
 import config
 from dataset import DataSet
 from multiprocessing import Pool, Manager
-from evolution import GA
+from genetic import GA
 from result import Result
 from share_data import ShareData
 import random
+
+ga = GA()
 
 
 def gen_data():
@@ -37,7 +39,6 @@ def use_excel_data():
 
 def test_each(inputY, __result: Result):
     target_lab = torch.Tensor(inputY)  # 目标LAB值
-    ga = GA()
     predict = ga.predict(target_lab)
     __result.add_plot(predict, inputY)
 
@@ -67,7 +68,7 @@ if __name__ == '__main__':
     dataset = DataSet()
     # test('evolution-random', gen_data())
     # test('evolution-excel', use_excel_data())
-    test('evolution-universal', dataset.universal.Y)
-    # test('evolution-standby', dataset.standby.Y)
+    # test('evolution-universal', dataset.universal.Y)
+    test('evolution-standby', dataset.standby.Y)
     # test('evolution-train', dataset.train.Y)
     # test('evolution-valid', dataset.valid.Y)
