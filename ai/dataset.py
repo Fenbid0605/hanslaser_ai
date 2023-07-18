@@ -25,7 +25,7 @@ class Matrix:
 
 class DataSet:
     def __init__(self):
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20230324.xlsx'))
+        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20221109.xlsx'))
         # 数据集
         worksheet = workbook.worksheets[0]
 
@@ -71,20 +71,20 @@ class DataSet:
                 self.valid.y.append(y)
 
         # 为数据集添加 GABVSG 数据
-        workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20230324.xlsx'))
-        worksheet = workbook.worksheets[0]
-        random.seed(1003)
-        rows = list(worksheet.rows)[1:]
-        rows = random.sample(rows, 188)
-        for row in rows:
-            x = [float(c.value) for c in row[1:5]]
-            x[1] /= 100
-            x[3] *= 100
-            y = [float(c.value) for c in row[5:8]]
-
-            self.train.x.append(x)
-            self.train.y.append(y)
-            self.train.rows.append([*x, *y])
+        # workbook = openpyxl.load_workbook(os.path.join(config.ABSPATH, 'data/data20230324.xlsx'))
+        # worksheet = workbook.worksheets[0]
+        # random.seed(1003)
+        # rows = list(worksheet.rows)[1:]
+        # rows = random.sample(rows, 188)
+        # for row in rows:
+        #     x = [float(c.value) for c in row[1:5]]
+        #     x[1] /= 100
+        #     x[3] *= 100
+        #     y = [float(c.value) for c in row[5:8]]
+        #
+        #     self.train.x.append(x)
+        #     self.train.y.append(y)
+        #     self.train.rows.append([*x, *y])
 
 
 class CustomDataset(Dataset):

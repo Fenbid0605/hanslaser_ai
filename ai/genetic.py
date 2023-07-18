@@ -4,9 +4,9 @@ import numpy as np
 import torch.nn.functional as F
 from torch import Tensor
 
-from model import Model
-from dataset import DataSet
-from predicted import Predicted
+from ai.model import Model
+from ai.dataset import DataSet
+from ai.predicted import Predicted
 from helper.log import log
 
 device = torch.device("cpu")

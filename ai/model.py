@@ -5,9 +5,8 @@ import torch.utils.data as Data  # ff
 import torch.nn.functional as F
 from matplotlib import pyplot as plt
 from rich.progress import track
-from dataset import CustomDataset
 from config import Config, ABSPATH
-from net import Net
+from ai.net import Net
 from torchmetrics.functional import mean_absolute_percentage_error
 
 config = Config()

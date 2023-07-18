@@ -23,18 +23,16 @@ class ClientService(rpyc.Service):
         return
 
 
-conn = rpyc.connect('localhost', 18888, service=ClientService)
+conn = rpyc.connect('192.168.31.186', 18888, service=ClientService)
 
 
 async def echo(websocket):
     gcp = Cursor(conn)
     async for message in websocket:
         if message == 'GetCursorPosition':
-            _ = asyncio.create_task(gcp.get_position())
+            _ = asyncio.create_task(gcp.get_position(websocket))
         elif message == 'StopGetCursorPosition':
             gcp.stop()
-
-        await websocket.send(message)
 
 
 async def ws():
